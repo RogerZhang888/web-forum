@@ -2,6 +2,8 @@ import './App.css'
 import "./index.css";
 import { useState, useEffect } from "react";
 import supabase from "./supabase";
+import {useNavigate} from "react-router-dom";
+import { login, register, logoutButton }  from "./components/auth";
 
 export default function App() {
     const [loading, setLoading] = useState(false);
@@ -10,10 +12,13 @@ export default function App() {
     const [authError, setAuthError] = useState(null);
 
     useEffect(() => {
+
+
     // Check for existing session
     supabase.auth.getSession().then(({ data: { session } }) => {
         setSession(session);
     });
+    const accessToken = session?.access_token;
 
     // Listen for auth changes
     const {
@@ -62,9 +67,7 @@ export default function App() {
             <div>
                 <h1>Welcome!</h1>
                 <p>You are logged in as: {session.user.email}</p>
-                <button onClick={handleLogout}>
-                    Sign Out
-                </button>
+                ${logoutButton}
             </div>
         );
     }
@@ -72,20 +75,9 @@ export default function App() {
     // Show login form
     return (
         <div>
-            <h1>Supabase + React</h1>
-            <p>Register</p>
-            <form onSubmit={handleLogin}>
-                <input
-                    type="email"
-                    placeholder="Your email"
-                    value={email}
-                    required={true}
-                    onChange={(e) => setEmail(e.target.value)}
-                />
-                <button disabled={loading}>
-                    {loading ? <span>Loading</span> : <span>Send magic link</span>}
-                </button>
-            </form>
+            ${login}
+            <p>Don't have an account?</p>
+            ${register}
         </div>
     );
 }

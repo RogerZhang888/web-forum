@@ -12,9 +12,9 @@ const register = () => {
         })
 
         if (error) {
-            console.error(error);
+            console.error("Error encountered:", error);
         }
-    };
+    }
 
     return (
         <div>
@@ -26,8 +26,6 @@ const register = () => {
             </form>
 
         </div>
-
-
     );
 
 }
