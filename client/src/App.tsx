@@ -21,19 +21,19 @@ export default function App() {
         setSession(session);
         setLoading(false);
     });
-    // const accessToken = session?.access_token;
+    
+    
 
     // Listen for auth changes
-    const { data: subscription } = supabase.auth.onAuthStateChange((_event, session) => {
+    const { data: subscription } = supabase.auth.onAuthStateChange((event, session) => {
+        console.log("Auth event:", event);
+        console.log("Session: ", session);
         setSession(session);
     });
 
     return () => subscription.subscription.unsubscribe(); //???????
     }, []);
 
-    // async function callChiBackend(accessToken) {
-        
-    // }
 
     if (loading) {
         return (

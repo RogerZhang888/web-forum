@@ -5,12 +5,14 @@ const Register = () => {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
 
-    const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
-        const {data, error} = await supabase.auth.signUp({
+    const handleSubmit = async (e: React.FormEvent) => {
+        e.preventDefault();
+        console.log("handleSubmit reached");
+        const {error} = await supabase.auth.signUp({
             email: email,
             password: password
         })
-        e.preventDefault();
+        
         if (error) {
             console.error("Error encountered:", error);
         }
@@ -20,8 +22,8 @@ const Register = () => {
         <div>
             <h2>Register</h2>
             <form onSubmit = {handleSubmit}>
-                <input type="text" id="email"></input>
-                <input type="password" id="password"></input>
+                <input type="text" id="register-email" value={email} onChange={(e) => setEmail(e.target.value)}/>
+                <input type="password" id="register-password" value={password} onChange={(e) => setPassword(e.target.value)}/>
                 <button type="submit">Register</button>
             </form>
 
