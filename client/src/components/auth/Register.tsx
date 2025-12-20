@@ -1,16 +1,16 @@
 import React, { useState } from 'react';
-import supabase from '../../supabase';
+import supabase from '../lib/supabase';
 
-const register = () => {
+const Register = () => {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
 
-    const handleSubmit = async (e) => {
+    const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
         const {data, error} = await supabase.auth.signUp({
             email: email,
             password: password
         })
-
+        e.preventDefault();
         if (error) {
             console.error("Error encountered:", error);
         }
@@ -30,4 +30,4 @@ const register = () => {
 
 }
 
-export default register;
+export default Register;
