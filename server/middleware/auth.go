@@ -11,13 +11,6 @@ import (
 
 var tokenAuth *jwtauth.JWTAuth
 
-func init() {
-	tokenAuth = jwtauth.New("HS256", []byte("secret"), nil)
-	if err != nil {
-		fmt.Println("Error occured in the backend middleware")
-	}
-}
-
 func router() http.Handler {
 	r := chi.NewRouter()
 
