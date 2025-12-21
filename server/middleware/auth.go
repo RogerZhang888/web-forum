@@ -1,50 +1,55 @@
 package middleware
 
 import (
+	"context"
 	"fmt"
 	"net/http"
-	"strings"
 
-	"github.com/go-chi/chi/v5"
-	"github.com/go-chi/jwtauth"
+	"github.com/golang-jwt/jwt"
 )
 
-var tokenAuth *jwtauth.JWTAuth
+type contextKey string
 
-func router() http.Handler {
-	r := chi.NewRouter()
+const claimsContextKey contextKey = "userClaims"
 
-	//Protected routes
-	r.Group(func(r chi.Router) {
-		r.Use(jwtauth.Verifier(tokenAuth))
-		r.Use(jwtauth.Authenticator)
-		r.Get("/admin", func(w http.ResponseWriter, r *http.Request) {
-			authHeader := r.Header.Get("Authorization")
-			if authHeader == "" {
-				http.Error(w, "Authorization header is required", http.StatusUnauthorized)
-				return
+type SupabaseClaims struct {
+	jwt.RegisteredClaims
+}
+
+func AuthMiddleware(next http.Handler) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		authHeader := r.Header.Get("Authorization")
+		if authHeader == "" || len(authHeader) < 7 || authHeader[:6] != "Bearer " {
+			http.Error(w, "Authorization header is required", http.StatusUnauthorized)
+			return
+		}
+		token := authHeader[7:]
+
+		token, err := jwt.ParseWithClaims(token, &SupabaseClaims{}, func(token *jwt.Token) (interface{}, error) {
+			if _, ok := token.Method.(*jwt.SigningMethodRSA); !ok {
+				return nil, fmt.Errorf("unexpected signing method %v", token.Method)
 			}
-			parts := strings.Split(authHeader, " ")
-			if len(parts) == 2 && parts[0] == "Bearer" {
-				token := parts[1]
 
+			publicKey, err := jwt.ParseRSAPublicKeyFromPEM([]byte(publicKeyPem))
+			if err != nil {
+				return nil, fmt.Errorf("failed to parse public key: %w", err)
 			}
-
-			_, claims, _ := jwtauth.FromContext(r.Context())
-			w.Write([]byte(fmt.Sprintf("This is protected area. Hi %v", claims["user_id"])))
+			return publicKey, nil
 		})
-		if err != nil {
-			fmt.Println("Error occured in the backend middleware")
+
+		if err != nil || !token.Valid {
+			http.Error(w, "Invalid or expired token", http.StatusUnauthorized)
+			return
 		}
 
-	})
+		// add claims to the request context
+		claims, ok := token.Claims.(*SupabaseClaims)
+		if !ok {
+			http.Error(w, "Invalid token claims", http.StatusUnauthorized)
+			return
+		}
 
-	//Public routes
-	r.Group(func(r chi.Router) {
-		r.Get("/", func(w http.ResponseWriter, r *http.Request) {
-			w.Write([]byte("welcome anonymous"))
-		})
+		ctx := context.WithValue(r.Context(), claimsContextKey, claims)
+		next.ServeHTTP(w, r.WithContext(ctx))
 	})
-
-	return r
 }

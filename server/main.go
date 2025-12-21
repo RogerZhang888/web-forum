@@ -3,9 +3,10 @@ package main
 import (
 	"fmt"
 	"net/http"
+	"net/http/httptest"
 
 	"github.com/go-chi/chi/v5"
-	"github.com/go-chi/jwtauth"
+	"github.com/rogerzhang888/web-forum/server/routes"
 )
 
 func main() {
@@ -15,28 +16,16 @@ func main() {
 }
 
 func router() http.Handler {
+
 	r := chi.NewRouter()
+	routes.RegisterRoutes(r)
 
-	//Protected routes
-	r.Group(func(r chi.Router) {
-		r.Use(AuthMiddleware)
-		r.Get("/me", func(w http.ResponseWriter, r *http.Request) {
+	req := httptest.NewRequest("GET", "/test", nil)
+	rr := httptest.NewRecorder()
 
-			_, claims, _ := jwtauth.FromContext(r.Context())
-			w.Write([]byte(fmt.Sprintf("This is protected area. Hi %v", claims["user_id"])))
-		})
-		if err != nil {
-			fmt.Println("Error occured in the backend middleware")
-		}
+	r.ServeHTTP(rr, req)
 
-	})
-
-	//Public routes
-	r.Group(func(r chi.Router) {
-		r.Get("/", func(w http.ResponseWriter, r *http.Request) {
-			w.Write([]byte("welcome anonymous"))
-		})
-	})
-
+	assert.Equal(t, 200, rr.Code)
+	assert.Equal(t, "expected", rr.Body.String())
 	return r
 }
