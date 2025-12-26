@@ -10,7 +10,7 @@ import (
 	"github.com/rogerzhang888/web-forum/server/db"
 )
 
-func getTopics(w http.ResponseWriter, r *http.Request) {
+func GetTopics(w http.ResponseWriter, r *http.Request) {
 	topics, err := db.DB.Query(`
 		SELECT *
 		FROM topics
@@ -28,11 +28,13 @@ func getTopics(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-func createTopic(w http.ResponseWriter, r *http.Request) {
-	type TopicData struct {
+func CreateTopic(w http.ResponseWriter, r *http.Request) {
+	userID := r.Context().Value("user_id").(string)
+
+	type Topic struct {
 		Name string `json:"name"`
 	}
-	var data TopicData
+	var data Topic
 
 	if err := json.NewDecoder(r.Body).Decode(&data); err != nil {
 		http.Error(w, "invalid body", http.StatusBadRequest)
@@ -42,10 +44,10 @@ func createTopic(w http.ResponseWriter, r *http.Request) {
 	var id int
 
 	err := db.DB.QueryRow(`
-		INSERT INTO topics (name)
-		VALUES ($1)
+		INSERT INTO topics (name, created_by)
+		VALUES ($1, $2)
 		RETURNING id
-	`, data.Name).Scan(&id)
+	`, data.Name, userID).Scan(&id)
 
 	if err != nil {
 		log.Println("failed to insert new topic into database:", err)
@@ -57,13 +59,15 @@ func createTopic(w http.ResponseWriter, r *http.Request) {
 
 }
 
-func deleteTopic(w http.ResponseWriter, r *http.Request) {
-	id := chi.URLParam(r, "id")
+func DeleteTopic(w http.ResponseWriter, r *http.Request) {
+	userID := r.Context().Value("user_id").(string)
+	id := chi.URLParam(r, "topic_id")
 
 	result, err := db.DB.Exec(`
 		DELETE FROM topics
 		WHERE id = $1
-	`, id)
+		AND created_by = $2
+	`, id, userID)
 
 	if err != nil {
 		log.Println("failed to delete topic from database:", err)
@@ -76,5 +80,4 @@ func deleteTopic(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "no rows were affected", http.StatusNotFound)
 		return
 	}
-
 }

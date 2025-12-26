@@ -11,10 +11,10 @@ import (
 )
 
 // get all posts under a topic
-func getPostsByTopic(w http.ResponseWriter, r *http.Request) {
-	topicID := chi.URLParam(r, "topicID")
+func GetPostsByTopic(w http.ResponseWriter, r *http.Request) {
+	topicID := chi.URLParam(r, "topic_id")
 
-	posts, err := db.DB.Query(`
+	rows, err := db.DB.Query(`
 		SELECT 
 			posts.id, 
 			posts.title,
@@ -31,47 +31,62 @@ func getPostsByTopic(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	defer posts.Close()
+	defer rows.Close()
 
 	type Post struct {
-		ID int `json:"id"`
-		Title string `json:"title"`
-		Content string `json:"content"`
+		ID       int    `json:"id"`
+		Title    string `json:"title"`
+		Content  string `json:"content"`
 		Username string `json:"username"`
 	}
 
-	var posts [Post]
+	var posts []Post //declare variable posts as an array where each element is of type Post
+
+	for rows.Next() {
+		var p Post
+		if err := rows.Scan(&p.ID, &p.Title, &p.Content, &p.Username); err != nil {
+			log.Println("failed to scan post:", err)
+			http.Error(w, "internal server error", http.StatusInternalServerError)
+			return
+		}
+
+		posts = append(posts, p)
+	}
+
+	json.NewEncoder(w).Encode(posts)
 
 }
 
 // get one post
-func getPost(w http.ResponseWriter, r *http.Request) {
+func GetPost(w http.ResponseWriter, r *http.Request) {
+	id := chi.URLParam(r, "post_id")
 
-	topics, err := db.DB.Query(`
-		SELECT id, title, content, topic_id
+	post, err := db.DB.Query(`
+		SELECT id, title, content
 		FROM posts
-		WHERE topic_id = $1
-	`)
+		WHERE post_id = $1
+	`, id)
 
 	if err != nil {
 		w.WriteHeader(422)
-		w.Write([]byte(fmt.Sprintf("Error getting posts", err)))
+		w.Write([]byte(fmt.Sprintf("Error getting post", err)))
 		return
 	}
 
-	if topics == nil {
-		w.Write([]byte("No topics found"))
+	if post == nil {
+		w.Write([]byte("Post not found"))
 		return
 	}
 }
 
-func createPost(w http.ResponseWriter, r *http.Request) {
-	type PostData struct {
+func CreatePost(w http.ResponseWriter, r *http.Request) {
+	userID := r.Context().Value("user_id").(string)
+	type Post struct {
 		Title   string `json:"title"`
 		Content string `json:"content"`
-		CreatedBy
 	}
-	var data PostData
+
+	var data Post
 
 	if err := json.NewDecoder(r.Body).Decode(&data); err != nil {
 		http.Error(w, "invalid body", http.StatusBadRequest)
@@ -81,10 +96,10 @@ func createPost(w http.ResponseWriter, r *http.Request) {
 	var id int
 
 	err := db.DB.QueryRow(`
-		INSERT INTO posts (title, content, )
-		VALUES ($1, $2)
+		INSERT INTO posts (created_by, title, content)
+		VALUES ($1, $2, $3)
 		RETURNING id
-	`, data.Title, data.Content).Scan(&id)
+	`, userID, data.Title, data.Content).Scan(&id)
 
 	if err != nil {
 		log.Println("failed to insert new post into database:", err)
@@ -96,13 +111,15 @@ func createPost(w http.ResponseWriter, r *http.Request) {
 
 }
 
-func deletePost(w http.ResponseWriter, r *http.Request) {
-	id := chi.URLParam(r, "id")
+func DeletePost(w http.ResponseWriter, r *http.Request) {
+	userID := r.Context().Value("user_id").(string)
+	id := chi.URLParam(r, "post_id")
 
 	result, err := db.DB.Exec(`
 		DELETE FROM posts
 		WHERE id = $1
-	`, id)
+		AND created_by = $2
+	`, id, userID)
 
 	if err != nil {
 		log.Println("failed to delete post from database:", err)
