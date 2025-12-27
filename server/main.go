@@ -7,6 +7,7 @@ import (
 	"net/http/httptest"
 
 	"github.com/go-chi/chi/v5"
+	"github.com/joho/godotenv"
 	"github.com/rogerzhang888/web-forum/server/db"
 	"github.com/rogerzhang888/web-forum/server/routes"
 )
@@ -15,6 +16,7 @@ func main() {
 	addr := ":3000"
 	fmt.Printf("Starting server on %v\n", addr)
 
+	godotenv.Load()
 	if err := db.Init(); err != nil {
 		log.Fatal(err)
 	}

@@ -20,7 +20,6 @@ func RegisterRoutes(r chi.Router) {
 		r.Post("/topics/{topic_id}/posts/{post_id}", handlers.DeletePost)
 		r.Post("/posts/{post_id}/comments", handlers.CreateComment)
 		r.Post("/posts/{post_id}/comments/{comment_id}", handlers.DeleteComment)
-
 	})
 
 	//Public routes
