@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import supabase from '../lib/supabase';
 
-const Register = () => {
+export default function Register() {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
 
@@ -31,5 +31,3 @@ const Register = () => {
     );
 
 }
-
-export default Register;

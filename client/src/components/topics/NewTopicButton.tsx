@@ -9,7 +9,11 @@ import {
     TextField,
 } from "@mui/material";
 
-export default function NewTopicButton() {
+type NewTopicButtonProps = {
+    onCreated?: () => void;
+}
+
+export default function NewTopicButton({ onCreated }: NewTopicButtonProps) {
     const [open, setOpen] = useState(false);
     const [name, setName] = useState("");
     const [loading, setLoading] = useState(false);
@@ -30,6 +34,9 @@ export default function NewTopicButton() {
             if (!res.ok) {
                 throw new Error("Failed to create topic");
             }
+            setName("");
+            setOpen(false);
+            onCreated?.();
         } catch (err) {
             console.error(err);
         } finally {

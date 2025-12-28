@@ -2,7 +2,7 @@ import "./App.css"
 import "./index.css";
 import { useState, useEffect } from "react";
 import supabase from "./components/lib/supabase";
-// import {useNavigate} from "react-router-dom";
+import {BrowserRouter, Routes, Route, Link} from "react-router-dom";
 import Login from "./components/auth/Login";
 import Register from "./components/auth/Register";
 import LogoutButton from "./components/auth/LogoutButton";
@@ -76,13 +76,9 @@ export default function App() {
         );
     }
 
-    // Show login form
-    return (
-        <div>
-            <Login />
-            <p>Don't have an account?</p>
-            <Register />
-        </div>
-    );
+
+    <BrowserRouter>
+    
+    </BrowserRouter>
 }
 

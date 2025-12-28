@@ -1,8 +1,7 @@
-import React, { useState } from 'react';
-
+import { Button } from '@mui/material';
 import supabase from '../lib/supabase';
 
-const LogoutButton = () => {
+export default function LogoutButton () {
     const handleLogout = async () : Promise<void> => {
         const {error} = await supabase.auth.signOut();
 
@@ -12,10 +11,8 @@ const LogoutButton = () => {
     }
 
     return (
-        <button onClick = {handleLogout}>
+        <Button variant="contained" onClick = {handleLogout}>
             Logout
-        </button>
+        </Button>
     );
 }
-
-export default LogoutButton

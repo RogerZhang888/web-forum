@@ -69,7 +69,7 @@ func GetPost(w http.ResponseWriter, r *http.Request) {
 
 	if err != nil {
 		w.WriteHeader(422)
-		w.Write([]byte(fmt.Sprintf("Error getting post", err)))
+		w.Write([]byte("Error getting post"))
 		return
 	}
 
