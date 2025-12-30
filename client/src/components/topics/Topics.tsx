@@ -13,7 +13,7 @@ export default function Topics({ topics }: TopicsProps) {
     return (
         <Grid container spacing={2}>
             {topics.map(topic => (
-                <Grid item xs={12} sm={6} md={4} key={topic.id}>
+                <Grid key={topic.id}>
                     <TopicComponent 
                         name={topic.name}
                         description={topic.description}

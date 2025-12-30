@@ -1,4 +1,6 @@
 import { useState } from "react";
+import { useAuth } from "../auth/AuthContext";
+import { useNavigate } from "react-router-dom";
 
 import {
     Button,
@@ -14,9 +16,12 @@ type NewTopicButtonProps = {
 }
 
 export default function NewTopicButton({ onCreated }: NewTopicButtonProps) {
+    const { user, session } = useAuth();
+    const navigate = useNavigate();
     const [open, setOpen] = useState(false);
     const [name, setName] = useState("");
     const [loading, setLoading] = useState(false);
+    const token = session?.access_token;
 
     const handleCreate = async () => {
         if(!name.trim()) return; // do nothing if title field is empty
@@ -27,6 +32,7 @@ export default function NewTopicButton({ onCreated }: NewTopicButtonProps) {
             const res = await fetch("http://localhost:3000/topics", {
                 method: "POST",
                 headers: {
+                    Authorization: `Bearer ${token}`,
                     "Content-Type": "application/json",
                 },
                 body: JSON.stringify({name}),
@@ -44,9 +50,17 @@ export default function NewTopicButton({ onCreated }: NewTopicButtonProps) {
         }
     }
 
+    const handleClick = () => {
+        if (!user) {
+            navigate("/login");
+            return;
+        }
+        setOpen(true);
+    }
+
     return (
         <>
-            <Button variant="contained" onClick={() => setOpen(true)}>
+            <Button variant="contained" onClick={handleClick}>
                 New Topic
             </Button>
 

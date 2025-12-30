@@ -1,4 +1,6 @@
 import { useState } from "react";
+import { useAuth } from "../auth/AuthContext";
+import { useNavigate, useParams } from "react-router-dom";
 
 import {
     Button,
@@ -13,11 +15,15 @@ type NewPostButtonProps = {
     onCreated?: () => void;
 }
 
-export default function NewTopicButton({ onCreated }: NewPostButtonProps) {
+export default function NewPostButton({ onCreated }: NewPostButtonProps) {
+    const { user, session } = useAuth();
+    const navigate = useNavigate();
     const [open, setOpen] = useState(false);
     const [title, setTitle] = useState("");
     const [content, setContent] = useState("");
     const [loading, setLoading] = useState(false);
+    const token = session?.access_token;
+    const { topic_id } = useParams<{ topic_id: string }>();
 
     const handleCreate = async () => {
         if(!title.trim() || !content.trim()) return; // do nothing if title or content field is empty
@@ -25,15 +31,16 @@ export default function NewTopicButton({ onCreated }: NewPostButtonProps) {
         setLoading(true);
 
         try {
-            const res = await fetch("http://localhost:3000/topics/{topic_id}/posts", {
+            const res = await fetch(`http://localhost:3000/topics/${topic_id}/posts`, {
                 method: "POST",
                 headers: {
+                    Authorization: `Bearer ${token}`,
                     "Content-Type": "application/json",
                 },
                 body: JSON.stringify({title, content}),
             });
             if (!res.ok) {
-                throw new Error("Failed to create topic");
+                throw new Error("Failed to create post");
             }
             setTitle("");
             setContent("");
@@ -46,9 +53,17 @@ export default function NewTopicButton({ onCreated }: NewPostButtonProps) {
         }
     }
 
+    const handleClick = () => {
+        if (!user) {
+            navigate("/login");
+            return;
+        }
+        setOpen(true);
+    }
+
     return (
         <>
-            <Button variant="contained" onClick={() => setOpen(true)}>
+            <Button variant="contained" onClick={handleClick}>
                 New Post
             </Button>
 

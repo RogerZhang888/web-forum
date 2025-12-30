@@ -13,7 +13,16 @@ export default function PostComponent({ title, content }: PostComponentProps) {
             <CardContent>
             <Typography variant="h6">{title}</Typography>
             {content && (
-                <Typography variant="body2" color="text.secondary">
+                <Typography 
+                variant="body2" 
+                color="text.secondary"
+                sx={{
+                    display: "-webkit-box",
+                    WebkitLineClamp: 3,     // 👈 number of lines
+                    WebkitBoxOrient: "vertical",
+                    overflow: "hidden",
+                }}
+                >
                 {content}
                 </Typography>
             )}

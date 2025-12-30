@@ -3,8 +3,6 @@ import "./index.css";
 import { useState, useEffect } from "react";
 import supabase from "./components/lib/supabase";
 import {BrowserRouter, Routes, Route, Link} from "react-router-dom";
-import Login from "./components/auth/Login";
-import Register from "./components/auth/Register";
 import LogoutButton from "./components/auth/LogoutButton";
 import type { Session } from "@supabase/supabase-js";
 

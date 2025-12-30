@@ -13,7 +13,7 @@ export default function Posts({ posts }: PostsProps) {
     return (
         <Grid container spacing={2}>
             {posts.map(post => (
-                <Grid xs={12} sm={6} md={4} key={post.id}>
+                <Grid key={post.id}>
                 <PostComponent
                     title={post.title}
                     content={post.content}
