@@ -7,16 +7,18 @@ type TopicComponentProps = {
 }
 
 export default function TopicComponent({ name, description }: TopicComponentProps) {
-    <Card>
-      <CardActionArea>
-        <CardContent>
-          <Typography variant="h6">{name}</Typography>
-          {description && (
-            <Typography variant="body2" color="text.secondary">
-              {description}
-            </Typography>
-          )}
-        </CardContent>
-      </CardActionArea>
-    </Card>
+    return (
+      <Card>
+        <CardActionArea>
+          <CardContent>
+            <Typography variant="h6">{name}</Typography>
+            {description && (
+              <Typography variant="body2" color="text.secondary">
+                {description}
+              </Typography>
+            )}
+          </CardContent>
+        </CardActionArea>
+      </Card>
+    )
 }
