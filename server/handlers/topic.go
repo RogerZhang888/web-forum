@@ -2,7 +2,6 @@ package handlers
 
 import (
 	"encoding/json"
-	"fmt"
 	"log"
 	"net/http"
 
@@ -10,15 +9,17 @@ import (
 	"github.com/rogerzhang888/web-forum/server/db"
 )
 
+type Topic struct
+
 func GetTopics(w http.ResponseWriter, r *http.Request) {
 	topics, err := db.DB.Query(`
-		SELECT *
+		SELECT id, name, description
 		FROM topics
 	`)
 
 	if err != nil {
 		w.WriteHeader(422)
-		w.Write([]byte(fmt.Sprintf("Error getting topics", err)))
+		w.Write([]byte("Error getting topics"))
 		return
 	}
 
@@ -26,6 +27,8 @@ func GetTopics(w http.ResponseWriter, r *http.Request) {
 		w.Write([]byte("No topics found"))
 		return
 	}
+
+
 }
 
 func CreateTopic(w http.ResponseWriter, r *http.Request) {

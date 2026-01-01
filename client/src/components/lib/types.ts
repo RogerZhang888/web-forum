@@ -7,6 +7,7 @@ export type Topic = {
 export type Post = {
     id: number;
     topic_id: number;
+    author: string;
     title: string;
     content?: string;
 }
@@ -14,5 +15,6 @@ export type Post = {
 export type Comment = {
     id: number;
     post_id: number;
-    content?: string;
+    author: string;
+    content: string;
 }

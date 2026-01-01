@@ -2,7 +2,6 @@ package handlers
 
 import (
 	"encoding/json"
-	"fmt"
 	"log"
 	"net/http"
 
@@ -26,7 +25,7 @@ func GetCommentsbyPost(w http.ResponseWriter, r *http.Request) {
 
 	if err != nil {
 		w.WriteHeader(422)
-		w.Write([]byte(fmt.Sprintf("Error getting comments", err)))
+		w.Write([]byte("Error getting comments"))
 		return
 	}
 

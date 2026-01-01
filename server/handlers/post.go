@@ -2,7 +2,6 @@ package handlers
 
 import (
 	"encoding/json"
-	"fmt"
 	"log"
 	"net/http"
 
@@ -27,7 +26,7 @@ func GetPostsByTopic(w http.ResponseWriter, r *http.Request) {
 
 	if err != nil {
 		w.WriteHeader(422)
-		w.Write([]byte(fmt.Sprintf("Error getting posts", err)))
+		w.Write([]byte("Error getting posts"))
 		return
 	}
 

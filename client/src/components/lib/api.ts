@@ -40,7 +40,6 @@ async function callChiBackend(url: string, options: CallChiBackendOptions = {}):
         console.error("Error calling Chi backend:", error);
         throw error;
     }    
-
 }
 
 export default callChiBackend;

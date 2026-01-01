@@ -20,7 +20,7 @@ export default function PostsPage() {
 
     const fetchPosts = async () => {
         try {
-            const res = await fetch(`http://localhost:3000/${topic_id}/posts`);
+            const res = await fetch(`http://localhost:3000/topics/${topic_id}/posts`);
             if (!res.ok) throw new Error(`Failed to fetch posts for ${topic_id}`);
 
             const data: Post[] = await res.json();

@@ -18,7 +18,7 @@ export default function PostComponent({ title, content }: PostComponentProps) {
                 color="text.secondary"
                 sx={{
                     display: "-webkit-box",
-                    WebkitLineClamp: 3,     // 👈 number of lines
+                    WebkitLineClamp: 3,    
                     WebkitBoxOrient: "vertical",
                     overflow: "hidden",
                 }}
