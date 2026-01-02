@@ -1,18 +1,14 @@
 import { useEffect, useState } from "react";
-
-import {
-    Container, 
-    Stack,
-    Typography, 
-    CircularProgress
-} from "@mui/material";
-
+import { Container, Stack, Typography, CircularProgress } from "@mui/material";
 import Topics from "./Topics";
 import NewTopicButton from "./NewTopicButton";
 import LoginButton from "../auth/LoginButton";
+import LogoutButton from "../auth/LogoutButton";
 import type { Topic } from "../lib/types";
+import { useAuth } from "../auth/AuthContext";
 
 export default function TopicsPage() {
+    const { user } = useAuth();
     const [topics, setTopics] = useState<Topic[]>([]);
     const [loading, setLoading] = useState(true);
 
@@ -44,7 +40,14 @@ export default function TopicsPage() {
             >
                 <Typography variant="h4">Topics</Typography>
                 <Stack direction="row" spacing={2}>
-                    <LoginButton />
+                    <>
+                        { user ? (
+                            <LogoutButton />
+                        ) : (
+                            <LoginButton />
+                        )
+                        }
+                    </>
                     <NewTopicButton onCreated={fetchTopics}></NewTopicButton>
                 </Stack>
             </Stack>

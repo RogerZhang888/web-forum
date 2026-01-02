@@ -16,16 +16,16 @@ func GetCommentsbyPost(w http.ResponseWriter, r *http.Request) {
 	rows, err := db.DB.Query(`
 		SELECT 
 			comments.id,
+			comments.post_id,
 			comments.content, 
 			profiles.username
 		FROM comments
-		JOIN profiles ON comments.created_by = comments.id
+		JOIN profiles ON comments.created_by = profiles.id
 		WHERE comments.post_id = $1
 	`, postID)
 
 	if err != nil {
-		w.WriteHeader(422)
-		w.Write([]byte("Error getting comments"))
+		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
 
@@ -33,6 +33,7 @@ func GetCommentsbyPost(w http.ResponseWriter, r *http.Request) {
 
 	type Comment struct {
 		ID       int    `json:"id"`
+		PostID   int    `json:"post_id"`
 		Content  string `json:"content"`
 		Username string `json:"username"`
 	}
@@ -41,7 +42,7 @@ func GetCommentsbyPost(w http.ResponseWriter, r *http.Request) {
 
 	for rows.Next() {
 		var p Comment
-		if err := rows.Scan(&p.ID, &p.Content, &p.Username); err != nil {
+		if err := rows.Scan(&p.ID, &p.PostID, &p.Content, &p.Username); err != nil {
 			log.Println("failed to scan comment:", err)
 			http.Error(w, "internal server error", http.StatusInternalServerError)
 			return
@@ -50,6 +51,7 @@ func GetCommentsbyPost(w http.ResponseWriter, r *http.Request) {
 		comments = append(comments, p)
 	}
 
+	w.Header().Set("Content-Type", "application/json")
 	json.NewEncoder(w).Encode(comments)
 
 }

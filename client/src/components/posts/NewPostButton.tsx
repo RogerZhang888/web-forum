@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useAuth } from "../auth/AuthContext";
-import { useNavigate, useParams } from "react-router-dom";
+import { useLocation, useNavigate, useParams } from "react-router-dom";
 
 import {
     Button,
@@ -18,6 +18,7 @@ type NewPostButtonProps = {
 export default function NewPostButton({ onCreated }: NewPostButtonProps) {
     const { user, session } = useAuth();
     const navigate = useNavigate();
+    const location = useLocation();
     const [open, setOpen] = useState(false);
     const [title, setTitle] = useState("");
     const [content, setContent] = useState("");
@@ -55,7 +56,9 @@ export default function NewPostButton({ onCreated }: NewPostButtonProps) {
 
     const handleClick = () => {
         if (!user) {
-            navigate("/login");
+            navigate("/login", {
+                state: {from: location}
+            });
             return;
         }
         setOpen(true);

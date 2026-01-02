@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useAuth } from "../auth/AuthContext";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 
 import {
     Button,
@@ -18,6 +18,7 @@ type NewTopicButtonProps = {
 export default function NewTopicButton({ onCreated }: NewTopicButtonProps) {
     const { user, session } = useAuth();
     const navigate = useNavigate();
+    const location = useLocation();
     const [open, setOpen] = useState(false);
     const [name, setName] = useState("");
     const [loading, setLoading] = useState(false);
@@ -51,8 +52,11 @@ export default function NewTopicButton({ onCreated }: NewTopicButtonProps) {
     }
 
     const handleClick = () => {
+        console.log("user:", user);
         if (!user) {
-            navigate("/login");
+            navigate("/login", {
+                state: { from: location }
+            });
             return;
         }
         setOpen(true);

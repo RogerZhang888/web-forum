@@ -1,6 +1,7 @@
 package handlers
 
 import (
+	"database/sql"
 	"encoding/json"
 	"log"
 	"net/http"
@@ -25,8 +26,7 @@ func GetPostsByTopic(w http.ResponseWriter, r *http.Request) {
 	`, topicID)
 
 	if err != nil {
-		w.WriteHeader(422)
-		w.Write([]byte("Error getting posts"))
+		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
 
@@ -44,7 +44,6 @@ func GetPostsByTopic(w http.ResponseWriter, r *http.Request) {
 	for rows.Next() {
 		var p Post
 		if err := rows.Scan(&p.ID, &p.Title, &p.Content, &p.Username); err != nil {
-			log.Println("failed to scan post:", err)
 			http.Error(w, "internal server error", http.StatusInternalServerError)
 			return
 		}
@@ -60,22 +59,39 @@ func GetPostsByTopic(w http.ResponseWriter, r *http.Request) {
 func GetPost(w http.ResponseWriter, r *http.Request) {
 	id := chi.URLParam(r, "post_id")
 
-	post, err := db.DB.Query(`
-		SELECT id, title, content
+	row := db.DB.QueryRow(`
+		SELECT 
+			posts.id, 
+			posts.title, 
+			posts.content,
+			profiles.username
 		FROM posts
-		WHERE post_id = $1
+		JOIN profiles ON posts.created_by = profiles.id
+		WHERE posts.id = $1
+
 	`, id)
 
+	type Post struct {
+		ID       int    `json:"id"`
+		Title    string `json:"title"`
+		Content  string `json:"content"`
+		Username string `json:"username"`
+	}
+
+	var post Post
+
+	err := row.Scan(&post.ID, &post.Title, &post.Content, &post.Username)
 	if err != nil {
-		w.WriteHeader(422)
-		w.Write([]byte("Error getting post"))
+		if err == sql.ErrNoRows {
+			http.Error(w, "post not found", http.StatusNotFound)
+			return
+		}
+		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
 
-	if post == nil {
-		w.Write([]byte("Post not found"))
-		return
-	}
+	w.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(w).Encode(post)
 }
 
 func CreatePost(w http.ResponseWriter, r *http.Request) {

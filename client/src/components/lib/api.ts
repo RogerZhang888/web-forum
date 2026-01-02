@@ -16,9 +16,9 @@ async function callChiBackend(url: string, options: CallChiBackendOptions = {}):
         }
 
         const headers = {
-            "Content Type": "application/json",
+            "Content-Type": "application/json",
+            ...(token && {"Authorization": `Bearer ${token}` }),
             ...options.headers,
-            "Authorization": `Bearer ${token}`,
         }
 
         const response = await fetch(url, {

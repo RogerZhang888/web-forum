@@ -9,26 +9,43 @@ import (
 	"github.com/rogerzhang888/web-forum/server/db"
 )
 
-type Topic struct
+type Topic struct {
+	ID          int     `json:"id"`
+	Name        string  `json:"name"`
+	Description *string `json:"description"`
+}
 
 func GetTopics(w http.ResponseWriter, r *http.Request) {
-	topics, err := db.DB.Query(`
+	rows, err := db.DB.Query(`
 		SELECT id, name, description
 		FROM topics
 	`)
 
 	if err != nil {
-		w.WriteHeader(422)
-		w.Write([]byte("Error getting topics"))
+		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
 
-	if topics == nil {
+	if rows == nil {
 		w.Write([]byte("No topics found"))
 		return
 	}
 
+	defer rows.Close()
 
+	topics := []Topic{}
+
+	for rows.Next() {
+		var t Topic
+		err := rows.Scan(&t.ID, &t.Name, &t.Description)
+		if err != nil {
+			http.Error(w, err.Error(), http.StatusUnprocessableEntity)
+			return
+		}
+		topics = append(topics, t)
+	}
+
+	json.NewEncoder(w).Encode(topics)
 }
 
 func CreateTopic(w http.ResponseWriter, r *http.Request) {

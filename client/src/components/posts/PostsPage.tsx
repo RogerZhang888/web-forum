@@ -10,10 +10,13 @@ import {
 import Posts from "./Posts";
 import NewPostButton from "./NewPostButton";
 import LoginButton from "../auth/LoginButton";
+import LogoutButton from "../auth/LogoutButton";
 import type { Post } from "../lib/types";
 import { useParams } from "react-router-dom";
+import { useAuth } from "../auth/AuthContext";
 
 export default function PostsPage() {
+    const { user } = useAuth();
     const [posts, setPosts] = useState<Post[]>([]);
     const [loading, setLoading] = useState(true);
     const { topic_id } = useParams<{ topic_id: string }>();
@@ -46,7 +49,14 @@ export default function PostsPage() {
             >
                 <Typography variant="h4">Posts</Typography>
                 <Stack direction="row" spacing={2}>
-                    <LoginButton />
+                    <>
+                    { user ? (
+                        <LogoutButton />
+                    ) : (
+                        <LoginButton />
+                    )
+                    }
+                    </>
                     <NewPostButton onCreated={fetchPosts}></NewPostButton>
                 </Stack>
             </Stack>

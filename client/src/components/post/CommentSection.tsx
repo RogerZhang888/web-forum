@@ -12,7 +12,7 @@ export default function CommentSection({ comments, newComment }: CommentsProps) 
         <Stack>
             <Typography variant="h6">Comments</Typography>
             {comments.map(c => (
-                <CommentComponent key={c.id} content={c.content} author={c.author}/>
+                <CommentComponent key={c.id} content={c.content} username={c.username}/>
             ))}
             {newComment}
         </Stack>

@@ -5,12 +5,14 @@ import PostDetailed from "./PostDetailed";
 import CommentSection from "./CommentSection";
 import NewCommentComponent from "./NewCommentComponent";
 import LoginButton from "../auth/LoginButton";
+import LogoutButton from "../auth/LogoutButton";
 import type { Comment, Post } from "../lib/types";
-import { useParams, useNavigate } from "react-router-dom";
+import { useLocation, useParams, useNavigate } from "react-router-dom";
 
 export default function PostPage() {
     const { user, session } = useAuth();
     const navigate = useNavigate();
+    const location = useLocation();
     const [comments, setComments] = useState<Comment[]>([]);
     const [newComment, setNewComment] = useState("");
     const [post, setPost] = useState<Post | null>(null);
@@ -46,7 +48,9 @@ export default function PostPage() {
 
     const handleCommentCreate = async () => {
         if (!user) {
-            navigate("/login");
+            navigate("/login", {
+                state: { from: location}
+            });
             return;
         }
         
@@ -96,25 +100,31 @@ export default function PostPage() {
     return (
     <Container maxWidth="md">
       <Stack spacing={3}>
+        <Stack direction="row" spacing={2}>
+            <>
+            { user ? (
+                <LogoutButton />
+            ) : (
+                <LoginButton />
+            )
+            }
+            </>
+        </Stack>
         <PostDetailed
           title={post.title}
           content={post.content}
-          author={post.author}
+          author={post.username}
         />
 
         <CommentSection
           comments={comments}
           newComment={
-            user ? (
               <NewCommentComponent
                 content={newComment}
                 onChange={setNewComment}
                 onSubmit={handleCommentCreate}
                 loading={submitting}
               />
-            ) : (
-              <LoginButton />
-            )
           }
         />
       </Stack>
