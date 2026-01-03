@@ -17,9 +17,9 @@ func RegisterRoutes(r chi.Router) {
 		r.Post("/topics", handlers.CreateTopic)
 		r.Delete("/topics/{topic_id}", handlers.DeleteTopic)
 		r.Post("/topics/{topic_id}/posts", handlers.CreatePost)
-		r.Post("/topics/{topic_id}/posts/{post_id}", handlers.DeletePost)
+		r.Delete("/posts/{post_id}", handlers.DeletePost)
 		r.Post("/posts/{post_id}/comments", handlers.CreateComment)
-		r.Post("/posts/{post_id}/comments/{comment_id}", handlers.DeleteComment)
+		r.Delete("/posts/{post_id}/comments/{comment_id}", handlers.DeleteComment)
 	})
 
 	//Public routes
