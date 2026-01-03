@@ -1,12 +1,15 @@
-import Grid from '@mui/material/Grid';
+import { Typography, Grid } from '@mui/material';
 import PostComponent from "./PostComponent";
 import type { Post } from "../lib/types";
 
 type PostsProps = {
-    posts: Post[];
+    posts?: Post[] | null;
 }
 
 export default function Posts({ posts }: PostsProps) {
+    if (!posts || posts.length === 0) {
+    return <Typography>This topic has no posts yet.</Typography>;
+  }
 
     return (
         <Grid container spacing={2}>

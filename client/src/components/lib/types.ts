@@ -7,6 +7,7 @@ export type Topic = {
 export type Post = {
     id: number;
     topic_id: number;
+    topic: string;
     username: string;
     title: string;
     content?: string;

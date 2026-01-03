@@ -49,7 +49,7 @@ func GetTopics(w http.ResponseWriter, r *http.Request) {
 }
 
 func CreateTopic(w http.ResponseWriter, r *http.Request) {
-	userID := r.Context().Value("user_id").(string)
+	userID := r.Context().Value("userID").(string)
 
 	type Topic struct {
 		Name string `json:"name"`

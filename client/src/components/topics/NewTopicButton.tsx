@@ -33,7 +33,7 @@ export default function NewTopicButton({ onCreated }: NewTopicButtonProps) {
             const res = await fetch("http://localhost:3000/topics", {
                 method: "POST",
                 headers: {
-                    Authorization: `Bearer ${token}`,
+                    "Authorization": `Bearer ${token}`,
                     "Content-Type": "application/json",
                 },
                 body: JSON.stringify({name}),

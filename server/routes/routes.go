@@ -11,9 +11,6 @@ import (
 func RegisterRoutes(r chi.Router) {
 	r.Group(func(r chi.Router) {
 		r.Use(middleware.AuthMiddleware)
-		r.Get("/me", func(w http.ResponseWriter, r *http.Request) {
-			w.Write([]byte("SUCCESS!!! welcome to a private route"))
-		})
 		r.Post("/topics", handlers.CreateTopic)
 		r.Delete("/topics/{topic_id}", handlers.DeleteTopic)
 		r.Post("/topics/{topic_id}/posts", handlers.CreatePost)

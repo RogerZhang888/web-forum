@@ -2,60 +2,42 @@ package middleware
 
 import (
 	"context"
-	"fmt"
+	"log"
 	"net/http"
 	"os"
+	"strings"
 
-	"github.com/golang-jwt/jwt/v5"
+	"github.com/supabase-community/auth-go"
 )
 
-type contextKey string
-
-const claimsContextKey contextKey = "userClaims"
-
-type SupabaseClaims struct {
-	jwt.RegisteredClaims
-}
-
-var publicKeyPem = os.Getenv("SUPABASE_PUBLIC_KEY")
-
 func AuthMiddleware(next http.Handler) http.Handler {
+
+	projectRef := os.Getenv("SUPABASE_PROJECT_REF")
+	apiKey := os.Getenv("SUPABASE_SERVICE_ROLE_KEY")
+
+	authClient := auth.New(projectRef, apiKey)
+
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		authHeader := r.Header.Get("Authorization")
-		if authHeader == "" || len(authHeader) < 7 || authHeader[:6] != "Bearer " {
-			http.Error(w, "Authorization header is required", http.StatusUnauthorized)
-			return
-		}
-		rawToken := authHeader[7:]
-
-		parsedToken, err := jwt.ParseWithClaims(
-			rawToken,
-			&SupabaseClaims{},
-			func(token *jwt.Token) (interface{}, error) {
-				if _, ok := token.Method.(*jwt.SigningMethodRSA); !ok {
-					return nil, fmt.Errorf("unexpected signing method %v", token.Method)
-				}
-
-				publicKey, err := jwt.ParseRSAPublicKeyFromPEM([]byte(publicKeyPem))
-				if err != nil {
-					return nil, fmt.Errorf("failed to parse public key: %w", err)
-				}
-				return publicKey, nil
-			})
-
-		if err != nil || !parsedToken.Valid {
-			http.Error(w, "Invalid or expired token", http.StatusUnauthorized)
+		if authHeader == "" || !strings.HasPrefix(authHeader, "Bearer ") {
+			http.Error(w, "Authorization header required", http.StatusUnauthorized)
 			return
 		}
 
-		// add claims to the request context
-		claims, ok := parsedToken.Claims.(*SupabaseClaims)
-		if !ok {
-			http.Error(w, "Invalid token claims", http.StatusUnauthorized)
-			return
+		token := strings.TrimPrefix(authHeader, "Bearer ")
+		log.Println("Token received:", token)
+
+		// Validate JWT and get user
+		user, err := authClient.WithToken(token).GetUser()
+		if err != nil {
+			log.Println("GetUser error:", err)
+		}
+		if user != nil {
+			log.Println("Authenticated user ID:", user.ID)
 		}
 
-		ctx := context.WithValue(r.Context(), claimsContextKey, claims)
+		// Add user ID to context
+		ctx := context.WithValue(r.Context(), "userID", user.ID.String())
 		next.ServeHTTP(w, r.WithContext(ctx))
 	})
 }

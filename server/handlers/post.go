@@ -19,8 +19,10 @@ func GetPostsByTopic(w http.ResponseWriter, r *http.Request) {
 			posts.id, 
 			posts.title,
 			posts.content, 
+			topics.name,
 			profiles.username
 		FROM posts
+		JOIN topics ON posts.topic_id = topics.id
 		JOIN profiles ON posts.created_by = profiles.id
 		WHERE posts.topic_id = $1
 	`, topicID)
@@ -36,6 +38,7 @@ func GetPostsByTopic(w http.ResponseWriter, r *http.Request) {
 		ID       int    `json:"id"`
 		Title    string `json:"title"`
 		Content  string `json:"content"`
+		Topic    string `json:"name"`
 		Username string `json:"username"`
 	}
 
@@ -43,7 +46,7 @@ func GetPostsByTopic(w http.ResponseWriter, r *http.Request) {
 
 	for rows.Next() {
 		var p Post
-		if err := rows.Scan(&p.ID, &p.Title, &p.Content, &p.Username); err != nil {
+		if err := rows.Scan(&p.ID, &p.Title, &p.Content, &p.Topic, &p.Username); err != nil {
 			http.Error(w, "internal server error", http.StatusInternalServerError)
 			return
 		}

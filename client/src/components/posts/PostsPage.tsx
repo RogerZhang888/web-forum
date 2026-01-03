@@ -47,7 +47,7 @@ export default function PostsPage() {
                 alignItems="center"
                 mb={3}
             >
-                <Typography variant="h4">Posts</Typography>
+                <Typography variant="h4">posts</Typography>
                 <Stack direction="row" spacing={2}>
                     <>
                     { user ? (
