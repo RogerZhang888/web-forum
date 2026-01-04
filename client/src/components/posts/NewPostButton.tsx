@@ -71,7 +71,7 @@ export default function NewPostButton({ onCreated }: NewPostButtonProps) {
             </Button>
 
             <Dialog open={open} onClose={() => setOpen(false)} fullWidth maxWidth = "sm">
-                <DialogTitle>Create New Topic</DialogTitle>
+                <DialogTitle>Create New Post</DialogTitle>
 
                 <DialogContent>
                     <TextField 
@@ -85,7 +85,7 @@ export default function NewPostButton({ onCreated }: NewPostButtonProps) {
                     <TextField 
                         autoFocus
                         margin="dense"
-                        label="Title"
+                        label="Content"
                         fullWidth
                         value={content}
                         onChange={(e) => setContent(e.target.value)}

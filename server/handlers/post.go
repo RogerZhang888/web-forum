@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"log"
 	"net/http"
+	"strconv"
 
 	"github.com/go-chi/chi/v5"
 	"github.com/rogerzhang888/web-forum/server/db"
@@ -16,7 +17,8 @@ func GetPostsByTopic(w http.ResponseWriter, r *http.Request) {
 
 	rows, err := db.DB.Query(`
 		SELECT 
-			posts.id, 
+			posts.id,
+			posts.topic_id, 
 			posts.title,
 			posts.content, 
 			topics.name,
@@ -36,6 +38,7 @@ func GetPostsByTopic(w http.ResponseWriter, r *http.Request) {
 
 	type Post struct {
 		ID       int    `json:"id"`
+		TopicID  int    `json:"topic_id"`
 		Title    string `json:"title"`
 		Content  string `json:"content"`
 		Topic    string `json:"name"`
@@ -46,7 +49,7 @@ func GetPostsByTopic(w http.ResponseWriter, r *http.Request) {
 
 	for rows.Next() {
 		var p Post
-		if err := rows.Scan(&p.ID, &p.Title, &p.Content, &p.Topic, &p.Username); err != nil {
+		if err := rows.Scan(&p.ID, &p.TopicID, &p.Title, &p.Content, &p.Topic, &p.Username); err != nil {
 			http.Error(w, "internal server error", http.StatusInternalServerError)
 			return
 		}
@@ -64,7 +67,8 @@ func GetPost(w http.ResponseWriter, r *http.Request) {
 
 	row := db.DB.QueryRow(`
 		SELECT 
-			posts.id, 
+			posts.id,
+			posts.topic_id, 
 			posts.title, 
 			posts.content,
 			profiles.username
@@ -76,6 +80,7 @@ func GetPost(w http.ResponseWriter, r *http.Request) {
 
 	type Post struct {
 		ID       int    `json:"id"`
+		TopicID  int    `json:"topic_id"`
 		Title    string `json:"title"`
 		Content  string `json:"content"`
 		Username string `json:"username"`
@@ -83,7 +88,7 @@ func GetPost(w http.ResponseWriter, r *http.Request) {
 
 	var post Post
 
-	err := row.Scan(&post.ID, &post.Title, &post.Content, &post.Username)
+	err := row.Scan(&post.ID, &post.TopicID, &post.Title, &post.Content, &post.Username)
 	if err != nil {
 		if err == sql.ErrNoRows {
 			http.Error(w, "post not found", http.StatusNotFound)
@@ -98,7 +103,14 @@ func GetPost(w http.ResponseWriter, r *http.Request) {
 }
 
 func CreatePost(w http.ResponseWriter, r *http.Request) {
-	userID := r.Context().Value("user_id").(string)
+	userID := r.Context().Value("userID").(string)
+	topicIDStr := chi.URLParam(r, "topic_id")
+	topicID, err := strconv.Atoi(topicIDStr)
+
+	if err != nil {
+		http.Error(w, "invalid topic id", http.StatusBadRequest)
+		return
+	}
 	type Post struct {
 		Title   string `json:"title"`
 		Content string `json:"content"`
@@ -113,11 +125,11 @@ func CreatePost(w http.ResponseWriter, r *http.Request) {
 
 	var id int
 
-	err := db.DB.QueryRow(`
-		INSERT INTO posts (created_by, title, content)
-		VALUES ($1, $2, $3)
+	err = db.DB.QueryRow(`
+		INSERT INTO posts (created_by, topic_id, title, content)
+		VALUES ($1, $2, $3, $4)
 		RETURNING id
-	`, userID, data.Title, data.Content).Scan(&id)
+	`, userID, topicID, data.Title, data.Content).Scan(&id)
 
 	if err != nil {
 		log.Println("failed to insert new post into database:", err)

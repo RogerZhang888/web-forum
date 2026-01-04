@@ -8,6 +8,15 @@ type CommentsProps = {
 }
 
 export default function CommentSection({ comments, newComment }: CommentsProps) {
+    if (!comments || comments.length === 0) {
+    return (
+        <Stack>
+            <Typography>This post has no comments yet.</Typography>
+            {newComment}
+        </Stack>
+    )
+  }
+    
     return (
         <Stack>
             <Typography variant="h6">Comments</Typography>

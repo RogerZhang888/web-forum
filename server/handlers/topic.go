@@ -1,6 +1,7 @@
 package handlers
 
 import (
+	"database/sql"
 	"encoding/json"
 	"log"
 	"net/http"
@@ -15,6 +16,7 @@ type Topic struct {
 	Description *string `json:"description"`
 }
 
+// get all topics
 func GetTopics(w http.ResponseWriter, r *http.Request) {
 	rows, err := db.DB.Query(`
 		SELECT id, name, description
@@ -48,11 +50,48 @@ func GetTopics(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(topics)
 }
 
+// get one topic
+func GetTopic(w http.ResponseWriter, r *http.Request) {
+	id := chi.URLParam(r, "topic_id")
+
+	row := db.DB.QueryRow(`
+		SELECT 
+			topics.id, 
+			topics.name, 
+			topics.description
+		FROM topics
+		WHERE topics.id = $1
+
+	`, id)
+
+	type Topic struct {
+		ID          int    `json:"id"`
+		Name        string `json:"name"`
+		Description string `json:"description"`
+	}
+
+	var topic Topic
+
+	err := row.Scan(&topic.ID, &topic.Name, &topic.Description)
+	if err != nil {
+		if err == sql.ErrNoRows {
+			http.Error(w, "topic not found", http.StatusNotFound)
+			return
+		}
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(w).Encode(topic)
+}
+
 func CreateTopic(w http.ResponseWriter, r *http.Request) {
 	userID := r.Context().Value("userID").(string)
 
 	type Topic struct {
-		Name string `json:"name"`
+		Name        string `json:"name"`
+		Description string `json:"description"`
 	}
 	var data Topic
 
@@ -64,10 +103,10 @@ func CreateTopic(w http.ResponseWriter, r *http.Request) {
 	var id int
 
 	err := db.DB.QueryRow(`
-		INSERT INTO topics (name, created_by)
-		VALUES ($1, $2)
+		INSERT INTO topics (name, description, created_by)
+		VALUES ($1, $2, $3)
 		RETURNING id
-	`, data.Name, userID).Scan(&id)
+	`, data.Name, data.Description, userID).Scan(&id)
 
 	if err != nil {
 		log.Println("failed to insert new topic into database:", err)

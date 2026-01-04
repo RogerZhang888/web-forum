@@ -21,11 +21,12 @@ export default function NewTopicButton({ onCreated }: NewTopicButtonProps) {
     const location = useLocation();
     const [open, setOpen] = useState(false);
     const [name, setName] = useState("");
+    const [description, setDescription] = useState("");
     const [loading, setLoading] = useState(false);
     const token = session?.access_token;
 
     const handleCreate = async () => {
-        if(!name.trim()) return; // do nothing if title field is empty
+        if(!name.trim() || !description.trim()) return; // do nothing if name field is empty
         
         setLoading(true);
 
@@ -36,12 +37,13 @@ export default function NewTopicButton({ onCreated }: NewTopicButtonProps) {
                     "Authorization": `Bearer ${token}`,
                     "Content-Type": "application/json",
                 },
-                body: JSON.stringify({name}),
+                body: JSON.stringify({name, description}),
             });
             if (!res.ok) {
                 throw new Error("Failed to create topic");
             }
             setName("");
+            setDescription("");
             setOpen(false);
             onCreated?.();
         } catch (err) {
@@ -75,10 +77,21 @@ export default function NewTopicButton({ onCreated }: NewTopicButtonProps) {
                     <TextField 
                         autoFocus
                         margin="dense"
-                        label="Title"
+                        label="Name"
                         fullWidth
                         value={name}
                         onChange={(e) => setName(e.target.value)}
+                    />
+                </DialogContent>
+
+                <DialogContent>
+                    <TextField 
+                        autoFocus
+                        margin="dense"
+                        label="Description"
+                        fullWidth
+                        value={description}
+                        onChange={(e) => setDescription(e.target.value)}
                     />
                 </DialogContent>
 

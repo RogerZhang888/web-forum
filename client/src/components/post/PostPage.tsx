@@ -17,13 +17,15 @@ export default function PostPage() {
     const [newComment, setNewComment] = useState("");
     const [post, setPost] = useState<Post | null>(null);
     const [loading, setLoading] = useState(true);
-    const { post_id } = useParams<{ post_id: string }>();
+    const { topic_id, post_id } = useParams<{ topic_id: string, post_id: string }>();
     const [submitting, setSubmitting] = useState(false);
     const token = session?.access_token;
 
     const fetchPost = async () => {
+        console.log(topic_id);
+        console.log(post_id);
         try {
-            const res = await fetch(`http://localhost:3000/posts/${post_id}`);
+            const res = await fetch(`http://localhost:3000/topics/${topic_id}/posts/${post_id}`);
             if (!res.ok) throw new Error(`Failed to fetch post ${post_id}`);
 
             const data: Post = await res.json();
@@ -110,10 +112,11 @@ export default function PostPage() {
             }
             </>
         </Stack>
+
         <PostDetailed
           title={post.title}
           content={post.content}
-          author={post.username}
+          username={post.username}
         />
 
         <CommentSection

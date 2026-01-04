@@ -17,6 +17,7 @@ export default function Posts({ posts }: PostsProps) {
                 <Grid key={post.id}>
                 <PostComponent
                     id = {post.id}
+                    topic_id = {post.topic_id}
                     title={post.title}
                     content={post.content}
                 />

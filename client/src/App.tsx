@@ -16,7 +16,7 @@ export default function App() {
 
                     <Route path="/topics" element={<TopicsPage />}/>
                     <Route path="/topics/:topic_id/posts" element={<PostsPage />} />
-                    <Route path="/posts/:post_id" element={<PostPage />} />
+                    <Route path="/topics/:topic_id/posts/:post_id" element={<PostPage />} />
 
                     <Route path="/login" element={<LoginPage />} />
                     <Route path="/register" element={<RegisterPage />} />

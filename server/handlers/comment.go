@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"log"
 	"net/http"
+	"strconv"
 
 	"github.com/go-chi/chi/v5"
 	"github.com/rogerzhang888/web-forum/server/db"
@@ -57,9 +58,16 @@ func GetCommentsbyPost(w http.ResponseWriter, r *http.Request) {
 }
 
 func CreateComment(w http.ResponseWriter, r *http.Request) {
-	userID := r.Context().Value("user_id").(string)
+	userID := r.Context().Value("userID").(string)
+	postIDStr := chi.URLParam(r, "post_id")
+	postID, err := strconv.Atoi(postIDStr)
+
+	if err != nil {
+		http.Error(w, "invalid post id", http.StatusBadRequest)
+		return
+	}
+
 	type Comment struct {
-		Title   string `json:"title"`
 		Content string `json:"content"`
 	}
 	var data Comment
@@ -71,11 +79,11 @@ func CreateComment(w http.ResponseWriter, r *http.Request) {
 
 	var id int
 
-	err := db.DB.QueryRow(`
-		INSERT INTO comments (created_by, title, content)
+	err = db.DB.QueryRow(`
+		INSERT INTO comments (created_by, post_id, content)
 		VALUES ($1, $2, $3)
 		RETURNING id
-	`, userID, data.Title, data.Content).Scan(&id)
+	`, userID, postID, data.Content).Scan(&id)
 
 	if err != nil {
 		log.Println("failed to insert new post into database:", err)

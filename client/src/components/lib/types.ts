@@ -1,7 +1,7 @@
 export type Topic = {
     id: number;
     name: string;
-    description?: string;
+    description: string;
 }
 
 export type Post = {
@@ -10,7 +10,7 @@ export type Post = {
     topic: string;
     username: string;
     title: string;
-    content?: string;
+    content: string;
 }
 
 export type Comment = {

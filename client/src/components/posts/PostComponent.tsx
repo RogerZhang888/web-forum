@@ -3,16 +3,17 @@ import { useNavigate } from "react-router-dom";
 
 type PostComponentProps = {
   id: number;
+  topic_id: number;
   title: string;
   content?: string;
   onClick?: () => void;
 }
 
-export default function PostComponent({ id, title, content }: PostComponentProps) {
+export default function PostComponent({ id, topic_id, title, content }: PostComponentProps) {
     const navigate = useNavigate();
-
+    console.log(topic_id);
     return (
-        <Card onClick={() => navigate(`/posts/${id}`)}>
+        <Card onClick={() => navigate(`/topics/${topic_id}/posts/${id}`)}>
         <CardActionArea>
             <CardContent>
             <Typography variant="h6">{title}</Typography>
