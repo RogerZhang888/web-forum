@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import supabase from '../lib/supabase';
 import { useLocation, useNavigate } from "react-router-dom";
+import { Button } from "@mui/material";
 
 export default function Login() {
     const [email, setEmail] = useState('');
@@ -42,7 +43,10 @@ export default function Login() {
                 <br></br>
                 <button type="submit">Login</button>
             </form>
-            <p></p>
+            <p>Don't have an account yet? </p>
+            <Button onClick = {() => navigate("/register")}>
+                Register
+            </Button>
         </div>
     );
 }

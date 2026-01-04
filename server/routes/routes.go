@@ -29,5 +29,6 @@ func RegisterRoutes(r chi.Router) {
 		r.Get("/topics/{topic_id}/posts", handlers.GetPostsByTopic)
 		r.Get("/topics/{topic_id}/posts/{post_id}", handlers.GetPost)
 		r.Get("/posts/{post_id}/comments", handlers.GetCommentsbyPost)
+		r.Post("/profile", handlers.CreateProfile)
 	})
 }

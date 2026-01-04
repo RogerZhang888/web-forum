@@ -1,21 +1,15 @@
 import { useEffect, useState } from "react";
-
-import {
-    Container, 
-    Stack,
-    Typography, 
-    CircularProgress
-} from "@mui/material";
-
+import { Container, Stack, Typography, CircularProgress, Button } from "@mui/material";
 import Posts from "./Posts";
 import NewPostButton from "./NewPostButton";
 import LoginButton from "../auth/LoginButton";
 import LogoutButton from "../auth/LogoutButton";
 import type { Topic, Post } from "../lib/types";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { useAuth } from "../auth/AuthContext";
 
 export default function PostsPage() {
+    const navigate = useNavigate();
     const { user } = useAuth();
     const [posts, setPosts] = useState<Post[]>([]);
     const [topic, setTopic] = useState<Topic | null>(null);
@@ -69,6 +63,12 @@ export default function PostsPage() {
                     }
                     </>
                     <NewPostButton onCreated={fetchPosts}></NewPostButton>
+                    <Button 
+                        variant="outlined"
+                        onClick={() => navigate(`/topics`)}
+                    >
+                        Back
+                    </Button>
                 </Stack>
             </Stack>
             {loading ? (

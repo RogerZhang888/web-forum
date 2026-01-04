@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { useAuth } from "../auth/AuthContext";
-import { Container, Stack, CircularProgress } from "@mui/material";
+import { Button, Container, Stack, CircularProgress } from "@mui/material";
 import PostDetailed from "./PostDetailed";
 import CommentSection from "./CommentSection";
 import NewCommentComponent from "./NewCommentComponent";
@@ -22,8 +22,6 @@ export default function PostPage() {
     const token = session?.access_token;
 
     const fetchPost = async () => {
-        console.log(topic_id);
-        console.log(post_id);
         try {
             const res = await fetch(`http://localhost:3000/topics/${topic_id}/posts/${post_id}`);
             if (!res.ok) throw new Error(`Failed to fetch post ${post_id}`);
@@ -110,6 +108,14 @@ export default function PostPage() {
                 <LoginButton />
             )
             }
+            </>
+            <>
+                <Button 
+                    variant="outlined"
+                    onClick={() => navigate(`/topics/${topic_id}/posts`)}
+                >
+                    Back
+                </Button>
             </>
         </Stack>
 

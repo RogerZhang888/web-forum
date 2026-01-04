@@ -11,7 +11,6 @@ type PostComponentProps = {
 
 export default function PostComponent({ id, topic_id, title, content }: PostComponentProps) {
     const navigate = useNavigate();
-    console.log(topic_id);
     return (
         <Card onClick={() => navigate(`/topics/${topic_id}/posts/${id}`)}>
         <CardActionArea>
