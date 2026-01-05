@@ -8,10 +8,12 @@ import type { Topic } from "../lib/types";
 import { useAuth } from "../auth/AuthContext";
 
 export default function TopicsPage() {
-    const { user } = useAuth();
+    const { user, session } = useAuth();
     const [topics, setTopics] = useState<Topic[]>([]);
     const [loading, setLoading] = useState(true);
+    const token = session?.access_token;
 
+    
     const fetchTopics = async () => {
         try {
             const res = await fetch("http://localhost:3000/topics");
@@ -23,6 +25,26 @@ export default function TopicsPage() {
             console.error(err);
         } finally {
             setLoading(false)
+        }
+    }
+
+    const deleteTopic = async (topic_id: number) => {
+        setLoading(true);
+        try {
+            const res = await fetch(`http://localhost:3000/topics/${topic_id}`, {
+                method: "DELETE",
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                },
+            });
+            if (!res.ok) {
+                throw new Error("Failed to delete topic");
+            }
+            setTopics(prev => prev.filter(t => t.id !== topic_id));
+        } catch (err) {
+            console.error(err);
+        } finally {
+            setLoading(false);
         }
     }
 
@@ -54,7 +76,11 @@ export default function TopicsPage() {
             {loading ? (
                 <CircularProgress />
             ) : (
-                <Topics topics={topics} />
+                <Topics 
+                    topics={topics} 
+                    currentUserId={user?.id}
+                    onDeleteTopic={deleteTopic}
+                />
             )}
         </Container>
     );

@@ -29,7 +29,6 @@ export default function NewTopicButton({ onCreated }: NewTopicButtonProps) {
         if(!name.trim() || !description.trim()) return; // do nothing if name field is empty
         
         setLoading(true);
-
         try {
             const res = await fetch("http://localhost:3000/topics", {
                 method: "POST",

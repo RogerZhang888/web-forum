@@ -18,6 +18,7 @@ func GetCommentsbyPost(w http.ResponseWriter, r *http.Request) {
 		SELECT 
 			comments.id,
 			comments.post_id,
+			comments.created_by
 			comments.content, 
 			profiles.username
 		FROM comments
@@ -33,17 +34,18 @@ func GetCommentsbyPost(w http.ResponseWriter, r *http.Request) {
 	defer rows.Close()
 
 	type Comment struct {
-		ID       int    `json:"id"`
-		PostID   int    `json:"post_id"`
-		Content  string `json:"content"`
-		Username string `json:"username"`
+		ID        int    `json:"id"`
+		PostID    int    `json:"post_id"`
+		CreatedBy string `json:"created_by"`
+		Content   string `json:"content"`
+		Username  string `json:"username"`
 	}
 
 	var comments []Comment
 
 	for rows.Next() {
 		var p Comment
-		if err := rows.Scan(&p.ID, &p.PostID, &p.Content, &p.Username); err != nil {
+		if err := rows.Scan(&p.ID, &p.PostID, &p.CreatedBy, &p.Content, &p.Username); err != nil {
 			log.Println("failed to scan comment:", err)
 			http.Error(w, "internal server error", http.StatusInternalServerError)
 			return
@@ -96,7 +98,7 @@ func CreateComment(w http.ResponseWriter, r *http.Request) {
 }
 
 func DeleteComment(w http.ResponseWriter, r *http.Request) {
-	userID := r.Context().Value("user_id").(string)
+	userID := r.Context().Value("userID").(string)
 	id := chi.URLParam(r, "comment_id")
 
 	result, err := db.DB.Exec(`

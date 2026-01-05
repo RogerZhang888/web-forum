@@ -4,9 +4,11 @@ import type { Topic } from "../lib/types";
 
 type TopicsProps = {
     topics: Topic[];
+    currentUserId?: string;
+    onDeleteTopic: (id: number) => void;
 }
 
-export default function Topics({ topics }: TopicsProps) {
+export default function Topics({ topics, currentUserId, onDeleteTopic }: TopicsProps) {
 
     return (
         <Grid container spacing={2}>
@@ -14,8 +16,11 @@ export default function Topics({ topics }: TopicsProps) {
                 <Grid key={topic.id}>
                     <TopicComponent 
                         id={topic.id}
+                        createdBy={topic.created_by}
                         name={topic.name}
                         description={topic.description}
+                        currentUserId={currentUserId}
+                        onDelete={() => onDeleteTopic(topic.id)}
                     />
                 </Grid>
             ))}

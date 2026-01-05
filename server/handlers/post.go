@@ -19,6 +19,7 @@ func GetPostsByTopic(w http.ResponseWriter, r *http.Request) {
 		SELECT 
 			posts.id,
 			posts.topic_id, 
+			posts.created_by,
 			posts.title,
 			posts.content, 
 			topics.name,
@@ -37,19 +38,20 @@ func GetPostsByTopic(w http.ResponseWriter, r *http.Request) {
 	defer rows.Close()
 
 	type Post struct {
-		ID       int    `json:"id"`
-		TopicID  int    `json:"topic_id"`
-		Title    string `json:"title"`
-		Content  string `json:"content"`
-		Topic    string `json:"name"`
-		Username string `json:"username"`
+		ID        int    `json:"id"`
+		TopicID   int    `json:"topic_id"`
+		CreatedBy string `json:"created_by"`
+		Title     string `json:"title"`
+		Content   string `json:"content"`
+		Topic     string `json:"name"`
+		Username  string `json:"username"`
 	}
 
 	var posts []Post //declare variable posts as an array where each element is of type Post
 
 	for rows.Next() {
 		var p Post
-		if err := rows.Scan(&p.ID, &p.TopicID, &p.Title, &p.Content, &p.Topic, &p.Username); err != nil {
+		if err := rows.Scan(&p.ID, &p.TopicID, &p.CreatedBy, &p.Title, &p.Content, &p.Topic, &p.Username); err != nil {
 			http.Error(w, "internal server error", http.StatusInternalServerError)
 			return
 		}
@@ -69,6 +71,7 @@ func GetPost(w http.ResponseWriter, r *http.Request) {
 		SELECT 
 			posts.id,
 			posts.topic_id, 
+			posts.created_by
 			posts.title, 
 			posts.content,
 			profiles.username
@@ -79,16 +82,17 @@ func GetPost(w http.ResponseWriter, r *http.Request) {
 	`, id)
 
 	type Post struct {
-		ID       int    `json:"id"`
-		TopicID  int    `json:"topic_id"`
-		Title    string `json:"title"`
-		Content  string `json:"content"`
-		Username string `json:"username"`
+		ID        int    `json:"id"`
+		TopicID   int    `json:"topic_id"`
+		CreatedBy string `json:"created_by"`
+		Title     string `json:"title"`
+		Content   string `json:"content"`
+		Username  string `json:"username"`
 	}
 
 	var post Post
 
-	err := row.Scan(&post.ID, &post.TopicID, &post.Title, &post.Content, &post.Username)
+	err := row.Scan(&post.ID, &post.TopicID, &post.CreatedBy, &post.Title, &post.Content, &post.Username)
 	if err != nil {
 		if err == sql.ErrNoRows {
 			http.Error(w, "post not found", http.StatusNotFound)
@@ -142,7 +146,7 @@ func CreatePost(w http.ResponseWriter, r *http.Request) {
 }
 
 func DeletePost(w http.ResponseWriter, r *http.Request) {
-	userID := r.Context().Value("user_id").(string)
+	userID := r.Context().Value("userID").(string)
 	id := chi.URLParam(r, "post_id")
 
 	result, err := db.DB.Exec(`

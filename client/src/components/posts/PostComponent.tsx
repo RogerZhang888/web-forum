@@ -1,15 +1,18 @@
 import {Card, CardActionArea, CardContent, Typography} from '@mui/material';
 import { useNavigate } from "react-router-dom";
+import DeleteButton from "../topics/DeleteButton";
 
 type PostComponentProps = {
   id: number;
   topic_id: number;
+  createdBy: string;
   title: string;
   content?: string;
-  onClick?: () => void;
+  currentUserId?: string;
+  onDelete: () => void;
 }
 
-export default function PostComponent({ id, topic_id, title, content }: PostComponentProps) {
+export default function PostComponent({ id, topic_id, createdBy, title, content, currentUserId, onDelete }: PostComponentProps) {
     const navigate = useNavigate();
     return (
         <Card onClick={() => navigate(`/topics/${topic_id}/posts/${id}`)}>
@@ -32,6 +35,13 @@ export default function PostComponent({ id, topic_id, title, content }: PostComp
             )}
             </CardContent>
         </CardActionArea>
+          <div className="absolute top-3 right-3">
+            <DeleteButton
+              ownerId={createdBy}
+              currentUserId={currentUserId}
+              onDelete={onDelete}
+            />
+          </div>
         </Card>
     )
 }

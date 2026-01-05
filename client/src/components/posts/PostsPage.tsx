@@ -10,11 +10,12 @@ import { useAuth } from "../auth/AuthContext";
 
 export default function PostsPage() {
     const navigate = useNavigate();
-    const { user } = useAuth();
+    const { user, session } = useAuth();
     const [posts, setPosts] = useState<Post[]>([]);
     const [topic, setTopic] = useState<Topic | null>(null);
     const [loading, setLoading] = useState(true);
     const { topic_id } = useParams<{ topic_id: string }>();
+    const token = session?.access_token;
 
     const fetchTopic = async() => {
         const res = await fetch(`http://localhost:3000/topics/${topic_id}`);
@@ -34,6 +35,26 @@ export default function PostsPage() {
             console.error(err);
         } finally {
             setLoading(false)
+        }
+    }
+
+    const deletePost = async (post_id: number) => {
+        setLoading(true);
+        try {
+            const res = await fetch(`http://localhost:3000/topics/${topic_id}/posts/${post_id}`, {
+                method: "DELETE",
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                },
+            });
+            if (!res.ok) {
+                throw new Error("Failed to delete post");
+            }
+            setPosts(prev => prev.filter(p => p.id !== post_id));
+        } catch (err) {
+            console.error(err);
+        } finally {
+            setLoading(false);
         }
     }
 
@@ -74,7 +95,11 @@ export default function PostsPage() {
             {loading ? (
                 <CircularProgress />
             ) : (
-                <Posts posts={posts} />
+                <Posts 
+                    posts={posts} 
+                    currentUserId={user?.id}
+                    onDeletePost={deletePost}
+                />
             )}
         </Container>
     );

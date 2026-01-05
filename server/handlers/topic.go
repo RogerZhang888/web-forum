@@ -12,6 +12,7 @@ import (
 
 type Topic struct {
 	ID          int     `json:"id"`
+	CreatedBy   string  `json:"created_by"`
 	Name        string  `json:"name"`
 	Description *string `json:"description"`
 }
@@ -19,7 +20,7 @@ type Topic struct {
 // get all topics
 func GetTopics(w http.ResponseWriter, r *http.Request) {
 	rows, err := db.DB.Query(`
-		SELECT id, name, description
+		SELECT id, created_by, name, description
 		FROM topics
 	`)
 
@@ -39,7 +40,7 @@ func GetTopics(w http.ResponseWriter, r *http.Request) {
 
 	for rows.Next() {
 		var t Topic
-		err := rows.Scan(&t.ID, &t.Name, &t.Description)
+		err := rows.Scan(&t.ID, &t.CreatedBy, &t.Name, &t.Description)
 		if err != nil {
 			http.Error(w, err.Error(), http.StatusUnprocessableEntity)
 			return
@@ -57,6 +58,7 @@ func GetTopic(w http.ResponseWriter, r *http.Request) {
 	row := db.DB.QueryRow(`
 		SELECT 
 			topics.id, 
+			topics.created_by,
 			topics.name, 
 			topics.description
 		FROM topics
@@ -66,13 +68,14 @@ func GetTopic(w http.ResponseWriter, r *http.Request) {
 
 	type Topic struct {
 		ID          int    `json:"id"`
+		CreatedBy   string `json:"created_by"`
 		Name        string `json:"name"`
 		Description string `json:"description"`
 	}
 
 	var topic Topic
 
-	err := row.Scan(&topic.ID, &topic.Name, &topic.Description)
+	err := row.Scan(&topic.ID, &topic.CreatedBy, &topic.Name, &topic.Description)
 	if err != nil {
 		if err == sql.ErrNoRows {
 			http.Error(w, "topic not found", http.StatusNotFound)
@@ -119,7 +122,7 @@ func CreateTopic(w http.ResponseWriter, r *http.Request) {
 }
 
 func DeleteTopic(w http.ResponseWriter, r *http.Request) {
-	userID := r.Context().Value("user_id").(string)
+	userID := r.Context().Value("userID").(string)
 	id := chi.URLParam(r, "topic_id")
 
 	result, err := db.DB.Exec(`
