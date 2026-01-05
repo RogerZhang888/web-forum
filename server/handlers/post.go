@@ -71,7 +71,7 @@ func GetPost(w http.ResponseWriter, r *http.Request) {
 		SELECT 
 			posts.id,
 			posts.topic_id, 
-			posts.created_by
+			posts.created_by,
 			posts.title, 
 			posts.content,
 			profiles.username

@@ -79,6 +79,26 @@ export default function PostPage() {
         }
     }
 
+    const deleteComment = async (comment_id: number) => {
+        setLoading(true);
+        try {
+            const res = await fetch(`http://localhost:3000/posts/${post_id}/comments/${comment_id}`, {
+                method: "DELETE",
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                },
+            });
+            if (!res.ok) {
+                throw new Error("Failed to delete comment");
+            }
+            setComments(prev => prev.filter(c => c.id !== comment_id));
+        } catch (err) {
+            console.error(err);
+        } finally {
+            setLoading(false);
+        }
+    }
+
     useEffect(() => {
         if (!post_id) return;
 
@@ -127,6 +147,9 @@ export default function PostPage() {
 
         <CommentSection
           comments={comments}
+          currentUserId={user?.id}
+          onDeleteComment={deleteComment}
+
           newComment={
               <NewCommentComponent
                 content={newComment}

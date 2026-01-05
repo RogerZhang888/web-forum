@@ -18,7 +18,7 @@ func GetCommentsbyPost(w http.ResponseWriter, r *http.Request) {
 		SELECT 
 			comments.id,
 			comments.post_id,
-			comments.created_by
+			comments.created_by,
 			comments.content, 
 			profiles.username
 		FROM comments
