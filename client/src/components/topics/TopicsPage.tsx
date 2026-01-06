@@ -13,10 +13,11 @@ export default function TopicsPage() {
     const [topics, setTopics] = useState<Topic[]>([]);
     const [loading, setLoading] = useState(true);
     const token = session?.access_token;
+    const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
     
     const fetchTopics = async () => {
         try {
-            const res = await fetch("http://localhost:3000/topics");
+            const res = await fetch(`${API_BASE_URL}/topics`);
             if (!res.ok) throw new Error("Failed to fetch topics");
 
             const data: Topic[] = await res.json();
@@ -31,7 +32,7 @@ export default function TopicsPage() {
     const deleteTopic = async (topic_id: number) => {
         setLoading(true);
         try {
-            const res = await fetch(`http://localhost:3000/topics/${topic_id}`, {
+            const res = await fetch(`${API_BASE_URL}/topics/${topic_id}`, {
                 method: "DELETE",
                 headers: {
                     Authorization: `Bearer ${token}`,

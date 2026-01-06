@@ -25,6 +25,7 @@ export default function NewPostButton({ onCreated }: NewPostButtonProps) {
     const [loading, setLoading] = useState(false);
     const token = session?.access_token;
     const { topic_id } = useParams<{ topic_id: string }>();
+    const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
     const handleCreate = async () => {
         if(!title.trim() || !content.trim()) return; // do nothing if title or content field is empty
@@ -32,7 +33,7 @@ export default function NewPostButton({ onCreated }: NewPostButtonProps) {
         setLoading(true);
 
         try {
-            const res = await fetch(`http://localhost:3000/topics/${topic_id}/posts`, {
+            const res = await fetch(`${API_BASE_URL}/topics/${topic_id}/posts`, {
                 method: "POST",
                 headers: {
                     Authorization: `Bearer ${token}`,

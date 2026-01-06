@@ -21,10 +21,11 @@ export default function PostPage() {
     const { topic_id, post_id } = useParams<{ topic_id: string, post_id: string }>();
     const [submitting, setSubmitting] = useState(false);
     const token = session?.access_token;
+    const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
     const fetchPost = async () => {
         try {
-            const res = await fetch(`http://localhost:3000/topics/${topic_id}/posts/${post_id}`);
+            const res = await fetch(`${API_BASE_URL}/topics/${topic_id}/posts/${post_id}`);
             if (!res.ok) throw new Error(`Failed to fetch post ${post_id}`);
 
             const data: Post = await res.json();
@@ -38,7 +39,7 @@ export default function PostPage() {
     
     const fetchComments = async () => {
         try {
-            const res = await fetch(`http://localhost:3000/posts/${post_id}/comments`);
+            const res = await fetch(`${API_BASE_URL}/posts/${post_id}/comments`);
             if (!res.ok) throw new Error(`Failed to fetch comments for post ${post_id}`);
             const data: Comment[] = await res.json();
             setComments(data);
@@ -60,7 +61,7 @@ export default function PostPage() {
         setSubmitting(true);
 
         try {
-            const res = await fetch(`http://localhost:3000/posts/${post_id}/comments`, {
+            const res = await fetch(`${API_BASE_URL}/posts/${post_id}/comments`, {
                 method: "POST",
                 headers: {
                     Authorization: `Bearer ${token}`,
@@ -83,7 +84,7 @@ export default function PostPage() {
     const deleteComment = async (comment_id: number) => {
         setLoading(true);
         try {
-            const res = await fetch(`http://localhost:3000/posts/${post_id}/comments/${comment_id}`, {
+            const res = await fetch(`${API_BASE_URL}/posts/${post_id}/comments/${comment_id}`, {
                 method: "DELETE",
                 headers: {
                     Authorization: `Bearer ${token}`,

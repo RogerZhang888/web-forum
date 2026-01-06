@@ -17,9 +17,10 @@ export default function PostsPage() {
     const [loading, setLoading] = useState(true);
     const { topic_id } = useParams<{ topic_id: string }>();
     const token = session?.access_token;
+    const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
     const fetchTopic = async() => {
-        const res = await fetch(`http://localhost:3000/topics/${topic_id}`);
+        const res = await fetch(`${API_BASE_URL}/topics/${topic_id}`);
         if (!res.ok) throw new Error("Failed to fetch topic");
         const data = await res.json();
         setTopic(data);
@@ -27,7 +28,7 @@ export default function PostsPage() {
     
     const fetchPosts = async () => {
         try {
-            const res = await fetch(`http://localhost:3000/topics/${topic_id}/posts`);
+            const res = await fetch(`${API_BASE_URL}/topics/${topic_id}/posts`);
             if (!res.ok) throw new Error(`Failed to fetch posts for ${topic_id}`);
 
             const data: Post[] = await res.json();
@@ -42,7 +43,7 @@ export default function PostsPage() {
     const deletePost = async (post_id: number) => {
         setLoading(true);
         try {
-            const res = await fetch(`http://localhost:3000/topics/${topic_id}/posts/${post_id}`, {
+            const res = await fetch(`${API_BASE_URL}/topics/${topic_id}/posts/${post_id}`, {
                 method: "DELETE",
                 headers: {
                     Authorization: `Bearer ${token}`,

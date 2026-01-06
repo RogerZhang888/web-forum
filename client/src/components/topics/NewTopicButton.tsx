@@ -24,13 +24,14 @@ export default function NewTopicButton({ onCreated }: NewTopicButtonProps) {
     const [description, setDescription] = useState("");
     const [loading, setLoading] = useState(false);
     const token = session?.access_token;
+    const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
     const handleCreate = async () => {
         if(!name.trim() || !description.trim()) return; // do nothing if name field is empty
         
         setLoading(true);
         try {
-            const res = await fetch("http://localhost:3000/topics", {
+            const res = await fetch(`${API_BASE_URL}/topics`, {
                 method: "POST",
                 headers: {
                     "Authorization": `Bearer ${token}`,
