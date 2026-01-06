@@ -5,6 +5,7 @@ import (
 	"log"
 	"net/http"
 	"os"
+	"path/filepath"
 
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
@@ -15,15 +16,24 @@ import (
 )
 
 func main() {
-	addr := ":3000"
+	// fs := http.FileServer(http.Dir("../client/dist"))
+	// http.Handle("/", fs)
+
+	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
+		http.ServeFile(w, r, filepath.Join("../client/dist", "index.html"))
+	})
+	godotenv.Load()
+	addr := os.Getenv("ADDR")
+	if addr == "" {
+		addr = "3000"
+	}
 	fmt.Printf("Starting server on %v\n", addr)
 
-	godotenv.Load()
 	if err := db.Init(); err != nil {
 		log.Fatal(err)
 	}
 
-	http.ListenAndServe(addr, router())
+	http.ListenAndServe(":"+addr, router())
 }
 
 func router() http.Handler {
