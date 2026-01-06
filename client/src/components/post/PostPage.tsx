@@ -8,6 +8,7 @@ import LoginButton from "../auth/LoginButton";
 import LogoutButton from "../auth/LogoutButton";
 import type { Comment, Post } from "../lib/types";
 import { useLocation, useParams, useNavigate } from "react-router-dom";
+import PageLayout from "../PageLayout";
 
 export default function PostPage() {
     const { user, session } = useAuth();
@@ -118,48 +119,41 @@ export default function PostPage() {
     if (!post) return null;
 
     return (
-    <Container maxWidth="md">
-      <Stack spacing={3}>
-        <Stack direction="row" spacing={2}>
-            <>
-            { user ? (
-                <LogoutButton />
-            ) : (
-                <LoginButton />
-            )
+      <PageLayout>
+        <Stack spacing={3}>
+            <Stack justifyContent={"flex-end"} direction="row" spacing={2}>
+                { user ? <LogoutButton /> : <LoginButton />}
+                <>
+                    <Button 
+                        variant="outlined"
+                        onClick={() => navigate(`/topics/${topic_id}/posts`)}
+                    >
+                        Back
+                    </Button>
+                </>
+            </Stack>
+
+            <PostDetailed
+            title={post.title}
+            content={post.content}
+            username={post.username}
+            />
+
+            <CommentSection
+            comments={comments}
+            currentUserId={user?.id}
+            onDeleteComment={deleteComment}
+
+            newComment={
+                <NewCommentComponent
+                    content={newComment}
+                    onChange={setNewComment}
+                    onSubmit={handleCommentCreate}
+                    loading={submitting}
+                />
             }
-            </>
-            <>
-                <Button 
-                    variant="outlined"
-                    onClick={() => navigate(`/topics/${topic_id}/posts`)}
-                >
-                    Back
-                </Button>
-            </>
+            />
         </Stack>
-
-        <PostDetailed
-          title={post.title}
-          content={post.content}
-          username={post.username}
-        />
-
-        <CommentSection
-          comments={comments}
-          currentUserId={user?.id}
-          onDeleteComment={deleteComment}
-
-          newComment={
-              <NewCommentComponent
-                content={newComment}
-                onChange={setNewComment}
-                onSubmit={handleCommentCreate}
-                loading={submitting}
-              />
-          }
-        />
-      </Stack>
-    </Container>
+      </PageLayout>
   );
 }

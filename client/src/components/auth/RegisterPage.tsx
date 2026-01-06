@@ -1,5 +1,7 @@
 import React, { useState } from 'react';
 import supabase from '../lib/supabase';
+import PageLayout from '../PageLayout';
+import HomeButton from '../HomeButton';
 
 export default function Register() {
     const [email, setEmail] = useState('');
@@ -41,7 +43,7 @@ export default function Register() {
     }
 
     return (
-        <div>
+        <PageLayout>
             <h2>Register</h2>
             <form onSubmit = {handleSubmit}>
                 <p>Email</p>
@@ -53,9 +55,11 @@ export default function Register() {
                 <br></br>
                 <br></br>
                 <button type="submit">Register</button>
+                
             </form>
-
-        </div>
+            <br></br>
+            <HomeButton />
+        </PageLayout>
     );
 
 }

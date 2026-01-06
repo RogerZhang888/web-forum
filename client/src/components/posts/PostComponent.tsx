@@ -15,7 +15,14 @@ type PostComponentProps = {
 export default function PostComponent({ id, topic_id, createdBy, title, content, currentUserId, onDelete }: PostComponentProps) {
     const navigate = useNavigate();
     return (
-        <Card onClick={() => navigate(`/topics/${topic_id}/posts/${id}`)}>
+        <Card 
+          sx={{ 
+          width: 720,
+          height: 170,
+          cursor: "pointer" 
+        }}
+          onClick={() => navigate(`/topics/${topic_id}/posts/${id}`)}
+        >
         <CardActionArea>
             <CardContent>
             <Typography variant="h6">{title}</Typography>

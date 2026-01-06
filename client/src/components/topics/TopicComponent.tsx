@@ -16,7 +16,11 @@ export default function TopicComponent({ id, createdBy, name, description, curre
 
     return (
       <Card
-        sx={{ cursor: "pointer" }}
+        sx={{ 
+          width: 229,
+          height: 140,
+          cursor: "pointer" 
+        }}
         onClick={() => navigate(`/topics/${id}/posts`)}
       >
         <CardActionArea>

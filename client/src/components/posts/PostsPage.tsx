@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Container, Stack, Typography, CircularProgress, Button } from "@mui/material";
+import { Stack, Typography, CircularProgress, Button } from "@mui/material";
 import Posts from "./Posts";
 import NewPostButton from "./NewPostButton";
 import LoginButton from "../auth/LoginButton";
@@ -7,6 +7,7 @@ import LogoutButton from "../auth/LogoutButton";
 import type { Topic, Post } from "../lib/types";
 import { useNavigate, useParams } from "react-router-dom";
 import { useAuth } from "../auth/AuthContext";
+import PageLayout from "../PageLayout";
 
 export default function PostsPage() {
     const navigate = useNavigate();
@@ -64,43 +65,45 @@ export default function PostsPage() {
     }, [topic_id]);
 
     return (
-        <Container maxWidth="lg">
-            <Stack
-                direction="row"
-                justifyContent="space-between"
-                alignItems="center"
-                mb={3}
-            >
-                <Typography variant="h4">
-                    {topic ? topic.name : "Posts"}
-                </Typography>
-                <Stack direction="row" spacing={2}>
-                    <>
-                    { user ? (
-                        <LogoutButton />
-                    ) : (
-                        <LoginButton />
-                    )
-                    }
-                    </>
-                    <NewPostButton onCreated={fetchPosts}></NewPostButton>
-                    <Button 
-                        variant="outlined"
-                        onClick={() => navigate(`/topics`)}
-                    >
-                        Back
-                    </Button>
+
+            <PageLayout>
+                <Stack
+                    direction="row"
+                    justifyContent="space-between"
+                    alignItems="center"
+                    mb={3}
+                >
+                    <Typography variant="h4">
+                        {topic ? topic.name : "Posts"}
+                    </Typography>
+                    <Stack direction="row" spacing={2}>
+                        <>
+                        { user ? (
+                            <LogoutButton />
+                        ) : (
+                            <LoginButton />
+                        )
+                        }
+                        </>
+                        <NewPostButton onCreated={fetchPosts}></NewPostButton>
+                        <Button 
+                            variant="outlined"
+                            onClick={() => navigate(`/topics`)}
+                        >
+                            Back
+                        </Button>
+                    </Stack>
                 </Stack>
-            </Stack>
-            {loading ? (
-                <CircularProgress />
-            ) : (
-                <Posts 
-                    posts={posts} 
-                    currentUserId={user?.id}
-                    onDeletePost={deletePost}
-                />
-            )}
-        </Container>
+                {loading ? (
+                    <CircularProgress />
+                ) : (
+                    <Posts 
+                        posts={posts} 
+                        currentUserId={user?.id}
+                        onDeletePost={deletePost}
+                    />
+                )}
+            </PageLayout>
+
     );
 }

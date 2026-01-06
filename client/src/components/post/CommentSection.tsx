@@ -20,7 +20,7 @@ export default function CommentSection({ comments, currentUserId, newComment, on
   }
     
     return (
-        <Stack>
+        <Stack spacing={2}>
             <Typography variant="h6">Comments</Typography>
             {comments.map(c => (
                 <CommentComponent 

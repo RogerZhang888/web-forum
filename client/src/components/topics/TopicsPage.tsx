@@ -1,9 +1,10 @@
 import { useEffect, useState } from "react";
-import { Container, Stack, Typography, CircularProgress } from "@mui/material";
+import { Stack, Typography, CircularProgress } from "@mui/material";
 import Topics from "./Topics";
 import NewTopicButton from "./NewTopicButton";
 import LoginButton from "../auth/LoginButton";
 import LogoutButton from "../auth/LogoutButton";
+import PageLayout from "../PageLayout";
 import type { Topic } from "../lib/types";
 import { useAuth } from "../auth/AuthContext";
 
@@ -12,7 +13,6 @@ export default function TopicsPage() {
     const [topics, setTopics] = useState<Topic[]>([]);
     const [loading, setLoading] = useState(true);
     const token = session?.access_token;
-
     
     const fetchTopics = async () => {
         try {
@@ -53,23 +53,16 @@ export default function TopicsPage() {
     }, []);
 
     return (
-        <Container maxWidth="lg">
+
+        <PageLayout>
             <Stack
                 direction="row"
-                justifyContent="space-between"
-                alignItems="center"
+                justifyContent="center"
                 mb={3}
             >
-                <Typography variant="h4">Topics</Typography>
+                <Typography variant="h4" sx={{ flexGrow: 1, textAlign: "left" }}>Topics</Typography>
                 <Stack direction="row" spacing={2}>
-                    <>
-                        { user ? (
-                            <LogoutButton />
-                        ) : (
-                            <LoginButton />
-                        )
-                        }
-                    </>
+                    { user ? <LogoutButton /> : <LoginButton /> }
                     <NewTopicButton onCreated={fetchTopics}></NewTopicButton>
                 </Stack>
             </Stack>
@@ -82,6 +75,7 @@ export default function TopicsPage() {
                     onDeleteTopic={deleteTopic}
                 />
             )}
-        </Container>
+        </PageLayout>
+
     );
 }

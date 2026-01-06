@@ -11,7 +11,7 @@ type TopicsProps = {
 export default function Topics({ topics, currentUserId, onDeleteTopic }: TopicsProps) {
 
     return (
-        <Grid container spacing={2}>
+        <Grid container spacing={2} justifyContent="center">
             {topics.map(topic => (
                 <Grid key={topic.id}>
                     <TopicComponent 

@@ -2,6 +2,8 @@ import React, { useState } from 'react';
 import supabase from '../lib/supabase';
 import { useLocation, useNavigate } from "react-router-dom";
 import { Button } from "@mui/material";
+import PageLayout from '../PageLayout';
+import HomeButton from '../HomeButton';
 
 export default function Login() {
     const [email, setEmail] = useState('');
@@ -30,7 +32,8 @@ export default function Login() {
     }
 
     return (
-        <div>
+        
+        <PageLayout>
             <h2>Login</h2>
             <p>Only logged-in users can create topics, posts and leave comments.</p>
             <form onSubmit = {handleSubmit}>
@@ -44,9 +47,12 @@ export default function Login() {
                 <button type="submit">Login</button>
             </form>
             <p>Don't have an account yet? </p>
-            <Button onClick = {() => navigate("/register")}>
+            <Button variant="outlined" onClick = {() => navigate("/register")}>
                 Register
             </Button>
-        </div>
+            <br></br><br></br>
+            <HomeButton />
+        </PageLayout>
+        
     );
 }
