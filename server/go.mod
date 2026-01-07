@@ -1,6 +1,6 @@
 module github.com/rogerzhang888/web-forum/server
 
-go 1.25.4
+go 1.25
 
 require github.com/joho/godotenv v1.5.1
 
