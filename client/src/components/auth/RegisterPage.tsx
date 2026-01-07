@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import supabase from '../lib/supabase';
+import { useLocation, useNavigate } from "react-router-dom";
 import PageLayout from '../PageLayout';
 import HomeButton from '../HomeButton';
 
@@ -8,6 +9,9 @@ export default function Register() {
     const [password, setPassword] = useState('');
     const [username, setUsername] = useState('');
     const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
+    const navigate = useNavigate();
+    const location = useLocation();
+    const from = location.state?.from?.pathname || "/login";
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -41,7 +45,8 @@ export default function Register() {
         }
         console.log("Profile creation response:", resData);
 
-    }
+        navigate(from, { replace: true });
+    }   
 
     return (
         <PageLayout>
