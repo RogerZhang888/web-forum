@@ -2,47 +2,50 @@ package middleware
 
 import (
 	"context"
+	"errors"
 	"log"
 	"net/http"
 	"os"
 	"strings"
 
-	"github.com/supabase-community/auth-go"
+	"github.com/golang-jwt/jwt/v5"
 )
 
 func AuthMiddleware(next http.Handler) http.Handler {
-
-	projectRef := os.Getenv("SUPABASE_PROJECT_REF")
-	apiKey := os.Getenv("SUPABASE_SERVICE_ROLE_KEY")
-
-	authClient := auth.New(projectRef, apiKey)
+	jwtSecret := []byte(os.Getenv("SUPABASE_JWT_SECRET"))
 
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		authHeader := r.Header.Get("Authorization")
 		if authHeader == "" || !strings.HasPrefix(authHeader, "Bearer ") {
-			http.Error(w, "Authorization header required", http.StatusUnauthorized)
+			http.Error(w, "Unauthorized", http.StatusUnauthorized)
 			return
 		}
 
-		token := strings.TrimPrefix(authHeader, "Bearer ")
-		log.Println("Token received:", token)
+		tokenStr := strings.TrimPrefix(authHeader, "Bearer ")
 
-		// Validate JWT and get user
-		user, err := authClient.WithToken(token).GetUser()
-		if err != nil {
+		token, err := jwt.Parse(tokenStr, func(t *jwt.Token) (interface{}, error) {
+			if _, ok := t.Method.(*jwt.SigningMethodHMAC); !ok {
+				return nil, errors.New("unexpected signing method")
+			}
+			return jwtSecret, nil
+		})
+
+		if err != nil || !token.Valid {
 			log.Println("GetUser error:", err)
 			http.Error(w, "Unauthorized: invalid token", http.StatusUnauthorized)
 			return
 		}
-		if user == nil {
-			http.Error(w, "Unauthorized: user not found", http.StatusUnauthorized)
+
+		claims := token.Claims.(jwt.MapClaims)
+
+		userID, ok := claims["sub"].(string)
+		if !ok {
+			http.Error(w, "Invalid token claims", http.StatusUnauthorized)
 			return
 		}
 
-		log.Println("Authenticated user ID:", user.ID)
-
 		// Add user ID to context
-		ctx := context.WithValue(r.Context(), "userID", user.ID.String())
+		ctx := context.WithValue(r.Context(), "userID", userID)
 		next.ServeHTTP(w, r.WithContext(ctx))
 	})
 }
