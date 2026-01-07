@@ -31,10 +31,15 @@ func AuthMiddleware(next http.Handler) http.Handler {
 		user, err := authClient.WithToken(token).GetUser()
 		if err != nil {
 			log.Println("GetUser error:", err)
+			http.Error(w, "Unauthorized: invalid token", http.StatusUnauthorized)
+			return
 		}
-		if user != nil {
-			log.Println("Authenticated user ID:", user.ID)
+		if user == nil {
+			http.Error(w, "Unauthorized: user not found", http.StatusUnauthorized)
+			return
 		}
+
+		log.Println("Authenticated user ID:", user.ID)
 
 		// Add user ID to context
 		ctx := context.WithValue(r.Context(), "userID", user.ID.String())

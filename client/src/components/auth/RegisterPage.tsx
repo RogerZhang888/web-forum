@@ -51,7 +51,7 @@ export default function Register() {
                 <input type="text" id="register-email" value={email} onChange={(e) => setEmail(e.target.value)}/>
                 <p>Password</p>
                 <input type="password" id="register-password" value={password} onChange={(e) => setPassword(e.target.value)}/>
-                <p>Username</p>
+                <p>Username (make sure there are no spaces)</p>
                 <input type="text" id="register-password" value={username} onChange={(e) => setUsername(e.target.value)}/>
                 <br></br>
                 <br></br>
