@@ -2,30 +2,30 @@ package db
 
 import (
 	"database/sql"
-	"fmt"
 	"os"
 	"time"
 
+	"github.com/jackc/pgx/v5"
+	"github.com/jackc/pgx/v5/stdlib"
 	_ "github.com/jackc/pgx/v5/stdlib"
 )
 
 var DB *sql.DB
 
 func Init() error {
-	dsn := os.Getenv("DATABASE_URL")
-	if dsn == "" {
-		return fmt.Errorf("DATABASE_URL not set")
-	}
-
-	var err error
-	DB, err = sql.Open("pgx", dsn)
+	cfg, err := pgx.ParseConfig(os.Getenv("DATABASE_URL"))
 	if err != nil {
 		return err
 	}
 
-	DB.SetMaxOpenConns(10)           // max concurrent DB connections
-	DB.SetMaxIdleConns(5)            // idle connections kept
-	DB.SetConnMaxLifetime(time.Hour) // recycle connections
+	cfg.DefaultQueryExecMode = pgx.QueryExecModeSimpleProtocol
+
+	DB = stdlib.OpenDB(*cfg)
+
+	DB.SetMaxOpenConns(10)                  // max concurrent DB connections
+	DB.SetMaxIdleConns(5)                   // idle connections kept
+	DB.SetConnMaxLifetime(time.Hour)        // recycle connections
+	DB.SetConnMaxIdleTime(30 * time.Minute) // max connection idle time
 
 	// verify connection
 	if err := DB.Ping(); err != nil {
