@@ -87,7 +87,7 @@ ChatGPT was used
 * as a search engine to explain certain engineering concepts and best practices.
 * occasionally, to assist in debugging after I tried to identify the source of an error and fix the error myself but could not successfully do so. 
 
-<br><br>
-
 Built by Roger Zhang
+
+<br><br>
 Last updated 9 January 2026
