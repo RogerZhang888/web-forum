@@ -6,6 +6,7 @@ It is a full-stack application with a clear separation between frontend, backend
 Click [here](https://rz-web-forum.netlify.app) to visit the deployed site. The frontend is hosted on Netlify and backend is hosted on Render. If visiting for the first time, please give a few minutes for the server to restart. <br><br>
 
 ## Local Setup
+Local setup is optional. The deployed site contains all required functionality for grading. 
 
 ### Prerequisites
 - Node.js (>=18)
@@ -16,13 +17,14 @@ Click [here](https://rz-web-forum.netlify.app) to visit the deployed site. The f
 
 Create a `.env` file in `/client`:
 
-VITE_SUPABASE_URL=...
-VITE_SUPABASE_ANON_KEY=...
+VITE_SUPABASE_URL=... <br><br>
+VITE_SUPABASE_ANON_KEY=... <br><br>
+VITE_API_BASE_URL=... 
 
 Create a `.env` file in `/server`:
 
-DATABASE_URL=...
-SUPABASE_JWT_SECRET=...
+DATABASE_URL =... <br><br>
+SUPABASE_JWT_SECRET =... 
 
 ### Run backend
 cd server
