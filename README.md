@@ -17,13 +17,13 @@ Local setup is optional. The deployed site contains all required functionality f
 
 Create a `.env` file in `/client`:
 
-VITE_SUPABASE_URL=... <br><br>
-VITE_SUPABASE_ANON_KEY=... <br><br>
+VITE_SUPABASE_URL=... <br>
+VITE_SUPABASE_ANON_KEY=... <br>
 VITE_API_BASE_URL=... 
 
 Create a `.env` file in `/server`:
 
-DATABASE_URL =... <br><br>
+DATABASE_URL =... <br>
 SUPABASE_JWT_SECRET =... 
 
 ### Run backend
@@ -72,7 +72,7 @@ Backend runs at http://localhost:3000
 * Supabase issues a JWT access token
 * Frontend sends the JWT in the Authorization header
 * Backend verifies the token and extracts the authenticated user ID
-* The backend enforces permissions for all mutating operations
+* The backend enforces permissions for all mutating operations (post/delete)
 
 ## Current Features
 * User authentication
@@ -89,5 +89,5 @@ ChatGPT was used
 
 Built by Roger Zhang
 
-<br><br>
+<br>
 Last updated 9 January 2026
