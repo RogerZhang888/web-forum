@@ -27,16 +27,16 @@ DATABASE_URL =... <br>
 SUPABASE_JWT_SECRET =... 
 
 ### Run backend
-cd server
+cd server <br>
 go run main.go
 
 ### Run frontend
-cd client
-npm install
+cd client <br>
+npm install <br>
 npm run dev
 
 Frontend runs at http://localhost:5173  
-Backend runs at http://localhost:3000
+Backend runs at http://localhost:3000 <br>
 
 ## Architecture Overview
 ### Frontend
@@ -85,7 +85,7 @@ Backend runs at http://localhost:3000
 ## AI Usage Declaration
 ChatGPT was used 
 * as a search engine to explain certain engineering concepts and best practices.
-* occasionally, to assist in debugging after I tried to identify the source of an error and fix the error myself but could not successfully do so. 
+* occasionally, to assist in debugging after I tried to identify the source of an error and fix the error myself but could not successfully do so. <br>
 
 Built by Roger Zhang
 <br>
